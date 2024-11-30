@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "294672174107",
+    "firebase_url": "https://agendaarduino-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "agendaarduino",
+    "storage_bucket": "agendaarduino.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294672174107:android:ec41f1e2a0d3eef5a7bcbe",
+        "android_client_info": {
+          "package_name": "com.agendaarduino"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDruVyWtaTOXaOkNI8oTWI0MdgjyqfCV1U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

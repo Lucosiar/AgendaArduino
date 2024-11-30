@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Capa del fondo sólido -->
+    <item>
+        <shape>
+            <corners android:radius="100dp" />
+            <gradient
+                android:startColor="@color/colorPrimary"
+                android:endColor="@color/colorSecundary"
+                android:angle="45" />
+            <corners android:radius="50dp" />
+        </shape>
+    </item>
+
+    <!-- Capa del borde con gradiente -->
+    <item android:left="4dp" android:right="4dp" android:top="4dp" android:bottom="4dp">
+        <shape>
+            <solid android:color="@color/white" />
+            <corners android:radius="50dp" />
+            <stroke
+                android:width="4dp"
+            android:color="@android:color/transparent"/> <!-- Transparente para que solo se vea el gradiente -->
+        </shape>
+    </item>
+</layer-list>

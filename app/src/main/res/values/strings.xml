@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">agendaArduino</string>
+    <string name="crear_cuenta">Crear cuenta</string>
+    <string name="registro">Registro</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="login">Login</string>
+    <string name="inicio_sesion">Inicio de sesión</string>
+    <string name="recordarContra">Recordar contraseña</string>
+    <string name="no_cuenta">¿No tienes cuenta?</string>
+    <string name="registrate">Registrate</string>
+</resources>
