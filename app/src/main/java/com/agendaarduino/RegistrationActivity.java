@@ -1,5 +1,6 @@
 package com.agendaarduino;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -85,26 +86,32 @@ public class RegistrationActivity extends AppCompatActivity {
             changeInProgress(false);
             if(task.isSuccessful()){
                 Toast.makeText(RegistrationActivity.this, "Registro completado", Toast.LENGTH_SHORT).show();
+                showEmailVerificationDialog();
                 firebaseAuth.getCurrentUser().sendEmailVerification();
                 firebaseAuth.signOut();
                 finish();
             }else {
-                // Registro fallido
-                String errorMessage;
-                try {
-                    throw task.getException();
-                } catch (FirebaseAuthWeakPasswordException e) {
-                    errorMessage = "La contraseña es demasiado débil.";
-                } catch (FirebaseAuthInvalidCredentialsException e) {
-                    errorMessage = "El correo electrónico es inválido.";
-                } catch (FirebaseAuthUserCollisionException e) {
-                    errorMessage = "Ya existe una cuenta con este correo.";
-                } catch (Exception e) {
-                    errorMessage = "El registro falló. Inténtalo nuevamente.";
-                }
+                String errorMessage = getErrorMessage(task);
                 Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @NonNull
+    private static String getErrorMessage(Task<AuthResult> task) {
+        String errorMessage;
+        try {
+            throw task.getException();
+        } catch (FirebaseAuthWeakPasswordException e) {
+            errorMessage = "La contraseña es demasiado débil.";
+        } catch (FirebaseAuthInvalidCredentialsException e) {
+            errorMessage = "El correo electrónico es inválido.";
+        } catch (FirebaseAuthUserCollisionException e) {
+            errorMessage = "Ya existe una cuenta con este correo.";
+        } catch (Exception e) {
+            errorMessage = "El registro falló. Inténtalo nuevamente.";
+        }
+        return errorMessage;
     }
 
     private void changeInProgress(boolean inProgress){
@@ -137,5 +144,15 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         return true;
     }
+
+    private void showEmailVerificationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Verificación de correo");
+        builder.setMessage("El correo de verificación puede tardar unos minutos. Por favor, revisa tu bandeja de entrada y también la carpeta de spam.");
+        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+        builder.setCancelable(false);
+        builder.show();
+    }
+
 
 }

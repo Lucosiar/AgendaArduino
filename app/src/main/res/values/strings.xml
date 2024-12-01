@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">agendaArduino</string>
+    <string name="app_name">Asistente</string>
     <string name="crear_cuenta">Crear cuenta</string>
     <string name="registro">Registro</string>
     <string name="email">Email</string>
@@ -10,4 +10,7 @@
     <string name="recordarContra">Recordar contraseña</string>
     <string name="no_cuenta">¿No tienes cuenta?</string>
     <string name="registrate">Registrate</string>
+    <string name="selecciona_la_hora">Selecciona la hora</string>
+    <string name="seleciona_la_fecha">Seleciona la fecha</string>
+    <string name="nueva_etiqueta">Añadir etiqueta</string>
 </resources>

@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegistrationActivity">
+    tools:context=".RegistrationActivity"
+    android:background="@color/background_color">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,7 +44,9 @@
             android:hint="@string/email"
             android:inputType="text"
             android:paddingStart="20dp"
-            android:background="@drawable/layerdrawable"/>
+            android:background="@drawable/layerdrawable"
+            android:textColor="@color/text_color"
+            />
 
         <EditText
             android:id="@+id/etPasswordRegister"
@@ -54,7 +57,8 @@
             android:hint="@string/password"
             android:inputType="text"
             android:paddingStart="20dp"
-            android:background="@drawable/layerdrawable"/>
+            android:background="@drawable/layerdrawable"
+            android:textColor="@color/text_color"/>
 
         <EditText
             android:id="@+id/etRePasswordRegister"
@@ -65,7 +69,8 @@
             android:hint="@string/password"
             android:inputType="text"
             android:paddingStart="20dp"
-            android:background="@drawable/layerdrawable"/>
+            android:background="@drawable/layerdrawable"
+            android:textColor="@color/text_color"/>
 
         <Button
             android:id="@+id/buttonRegistration"
@@ -73,7 +78,8 @@
             android:layout_height="60dp"
             android:layout_marginTop="15dp"
             android:text="@string/crear_cuenta"
-            android:textSize="18dp" />
+            android:textSize="18dp"
+            android:textColor="@color/white"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -86,14 +92,16 @@
                 android:id="@+id/tvHaveAccount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/already_have_an_account" />
+                android:text="@string/already_have_an_account"
+                android:textColor="@color/text_color"/>
 
             <TextView
                 android:id="@+id/tvLoginRegister"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/login"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/text_color"/>
         </LinearLayout>
 
         <ProgressBar

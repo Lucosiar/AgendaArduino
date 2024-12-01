@@ -1,8 +1,10 @@
 package com.agendaarduino;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +18,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button buttonAddEvent, buttonRegistrationPrueba;
+    private ImageButton buttonAddEvent;
 
 
     @Override
@@ -24,21 +26,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseAuth.getInstance().setLanguageCode("es");
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = auth.getCurrentUser();
-
-
         buttonAddEvent = findViewById(R.id.buttonAddEvent);
-        buttonRegistrationPrueba = findViewById(R.id.buttonRegistrationPrueba);
 
-        buttonRegistrationPrueba.setOnClickListener(v-> change());
-
+        buttonAddEvent.setOnClickListener(v-> newEvent());
 
     }
 
-    private void change() {
-        Intent i = new Intent(MainActivity.this, RegistrationActivity.class);
+    private void newEvent() {
+        Intent i = new Intent(MainActivity.this, AddEventActivity.class);
         startActivity(i);
     }
+
+
 }

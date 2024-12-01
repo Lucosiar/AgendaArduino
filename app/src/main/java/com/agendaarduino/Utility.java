@@ -10,10 +10,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Utility {
 
-    private static void showToast(Context context, String message){
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-    }
-
     public static CollectionReference getCollectionReferenceForEvents(){
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         return FirebaseFirestore.getInstance().collection("events")

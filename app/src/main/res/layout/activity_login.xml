@@ -5,13 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".LoginActivity"
+    android:background="@color/background_color">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
         android:paddingLeft="20dp"
         android:paddingRight="20dp">
 
@@ -30,6 +31,7 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/inicio_sesion"
+            android:textColor="@color/text_color"
             android:textSize="34sp"
             android:textStyle="bold" />
 
@@ -38,29 +40,33 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="15dp"
+            android:background="@drawable/layerdrawable"
+            android:baselineAligned="false"
             android:ems="10"
             android:hint="@string/email"
             android:inputType="text"
             android:paddingStart="20dp"
-            android:background="@drawable/layerdrawable"/>
+            android:textColor="@color/text_color"/>
 
         <EditText
             android:id="@+id/etPasswordLogin"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="15dp"
+            android:background="@drawable/layerdrawable"
             android:ems="10"
             android:hint="@string/password"
             android:inputType="text"
             android:paddingStart="20dp"
-            android:background="@drawable/layerdrawable"/>
+            android:textColor="@color/text_color"/>
 
         <Button
-            android:id="@+id/buttonRegistration"
+            android:id="@+id/buttonLogin"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="15dp"
             android:text="Iniciar sesión"
+            android:textColor="@color/white"
             android:textSize="18dp" />
 
         <LinearLayout
@@ -74,14 +80,16 @@
                 android:id="@+id/tvNotAccount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no_cuenta" />
+                android:text="@string/no_cuenta"
+                android:textColor="@color/text_color"/>
 
             <TextView
                 android:id="@+id/tvRegistrate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/registrate"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/text_color"/>
         </LinearLayout>
 
         <LinearLayout
@@ -95,19 +103,10 @@
                 android:id="@+id/tvPasswordRemember"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/recordarContra" />
+                android:text="@string/recordarContra"
+                android:textColor="@color/text_color"/>
 
         </LinearLayout>
-
-        <ProgressBar
-            android:id="@+id/progressBarLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:indeterminateTint="@color/colorPrimary"
-            android:visibility="gone" />
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
