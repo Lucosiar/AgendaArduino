@@ -7,26 +7,37 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.auth.api.identity.BeginSignInRequest;
+import com.google.android.gms.auth.api.identity.BeginSignInResult;
+import com.google.android.gms.auth.api.identity.Identity;
+import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etEmailLogin, etPasswordLogin;
     private Button buttonLogin;
     private TextView tvNotAccount, tvRegistrate, tvPasswordRemember;
+    
+    private ImageView imageChrome;
+
+    private SignInClient mSignInClient;
+    private FirebaseAuth mAuth;
 
 
     @Override
@@ -34,17 +45,34 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        variablesInitialization();
+
+        // Inicializar Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
+        // Configurar Google Sign-In usando la nueva API
+        mSignInClient = Identity.getSignInClient(this);
+
+        buttonLogin.setOnClickListener(v -> login());
+        tvNotAccount.setOnClickListener(v -> navigateToRegister());
+        tvRegistrate.setOnClickListener(v -> navigateToRegister());
+        tvPasswordRemember.setOnClickListener(v -> forgotPassword());
+        imageChrome.setOnClickListener(v -> loginWithGoogle());
+        
+
+    }
+
+    public void variablesInitialization(){
         etEmailLogin = findViewById(R.id.etEmailLogin);
         etPasswordLogin = findViewById(R.id.etPasswordLogin);
         buttonLogin = findViewById(R.id.buttonLogin);
         tvNotAccount = findViewById(R.id.tvNotAccount);
         tvRegistrate = findViewById(R.id.tvRegistrate);
         tvPasswordRemember = findViewById(R.id.tvPasswordRemember);
+        imageChrome= findViewById(R.id.imageChrome);
+    }
 
-        buttonLogin.setOnClickListener(v -> login());
-        tvNotAccount.setOnClickListener(v -> navigateToRegister());
-        tvRegistrate.setOnClickListener(v -> navigateToRegister());
-        tvPasswordRemember.setOnClickListener(v -> forgotPassword());
+    private void loginWithGoogle() {
 
     }
 

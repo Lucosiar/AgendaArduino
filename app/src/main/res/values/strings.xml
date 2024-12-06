@@ -13,4 +13,7 @@
     <string name="selecciona_la_hora">Selecciona la hora</string>
     <string name="seleciona_la_fecha">Seleciona la fecha</string>
     <string name="nueva_etiqueta">Añadir etiqueta</string>
+    <string name="client_id">294672174107-vsk4d2pqu7bk9lgvvd9d7tg0u7p74mc5.apps.googleusercontent.com</string>
+    <string name="nuevo_evento">Añadir evento</string>
+    <string name="fecha_actual">Fecha actual</string>
 </resources>

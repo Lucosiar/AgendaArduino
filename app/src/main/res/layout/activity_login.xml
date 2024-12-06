@@ -14,7 +14,9 @@
         android:gravity="center"
         android:orientation="vertical"
         android:paddingLeft="20dp"
-        android:paddingRight="20dp">
+        android:paddingRight="20dp"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="16dp">
 
         <ImageView
             android:id="@+id/imageViewLogin"
@@ -46,7 +48,7 @@
             android:hint="@string/email"
             android:inputType="text"
             android:paddingStart="20dp"
-            android:textColor="@color/text_color"/>
+            android:textColor="@color/text_color" />
 
         <EditText
             android:id="@+id/etPasswordLogin"
@@ -58,7 +60,7 @@
             android:hint="@string/password"
             android:inputType="text"
             android:paddingStart="20dp"
-            android:textColor="@color/text_color"/>
+            android:textColor="@color/text_color" />
 
         <Button
             android:id="@+id/buttonLogin"
@@ -81,15 +83,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/no_cuenta"
-                android:textColor="@color/text_color"/>
+                android:textColor="@color/text_color" />
 
             <TextView
                 android:id="@+id/tvRegistrate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/registrate"
-                android:textStyle="bold"
-                android:textColor="@color/text_color"/>
+                android:textColor="@color/text_color"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
@@ -104,9 +106,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/recordarContra"
-                android:textColor="@color/text_color"/>
+                android:textColor="@color/text_color" />
 
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageChrome"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="15dp"
+            app:srcCompat="@drawable/cromo" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

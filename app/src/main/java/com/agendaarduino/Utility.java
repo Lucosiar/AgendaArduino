@@ -11,9 +11,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class Utility {
 
     public static CollectionReference getCollectionReferenceForEvents(){
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        return FirebaseFirestore.getInstance().collection("events")
-                .document(currentUser.getUid()).collection("myEvents");
+        return FirebaseFirestore.getInstance().collection("events");
+    }
+
+    public static CollectionReference getCollectionReferenceForLabels(){
+        return FirebaseFirestore.getInstance().collection("labels");
     }
 
 }

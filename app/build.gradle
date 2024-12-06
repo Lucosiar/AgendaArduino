@@ -40,8 +40,8 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-    implementation platform('com.google.firebase:firebase-bom:33.6.0') // Usa la última versión
+    implementation platform(libs.firebase.bom)
     implementation libs.google.firebase.auth
-    implementation("com.google.android.gms:play-services-location:21.3.0")
-
+    implementation(libs.play.services.location)
+    implementation libs.play.services.auth.v2030
 }
