@@ -6,5 +6,7 @@
     <color name="colorSecundary">#58F3C5</color>
     <color name="background_color">@color/white</color>
     <color name="text_color">@color/black</color>
+    <color name="delayed_event">#D83434</color>
+
 
 </resources>

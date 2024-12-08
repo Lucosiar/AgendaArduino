@@ -84,12 +84,10 @@ public class AddEventActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("AddEventActivity", "onResume: Recargando etiquetas desde Firestore");
         loadLabelsFromFirestore();
     }
 
     public void initialize(){
-        Log.d("AddEventActivity", "Inicializando vistas");
         etTitle = findViewById(R.id.etTitle);
         etDescription = findViewById(R.id.etDescription);
         tvDate = findViewById(R.id.tvDate);
@@ -119,7 +117,7 @@ public class AddEventActivity extends AppCompatActivity {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDay) -> {
-            tvDate.setText(String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay));
+            tvDate.setText(String.format("%04d/%02d/%02d", selectedYear, selectedMonth + 1, selectedDay));
         }, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
@@ -252,6 +250,6 @@ public class AddEventActivity extends AppCompatActivity {
         Intent intent = new Intent(AddEventActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        finish(); // Finaliza la actividad actual
+        finish();
     }
 }

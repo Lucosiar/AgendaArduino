@@ -54,16 +54,18 @@ public class MainActivity extends AppCompatActivity {
     private void setUpRecyclerView() {
         List<Event> eventList = new ArrayList<>();
         eventAdapter = new EventAdapter(this, eventList, event -> {
-            // Manejo del clic en un evento
-            Toast.makeText(this, "Evento: " + event.getTitle(), Toast.LENGTH_SHORT).show();
+            editEvent();
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(eventAdapter);
 
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String fechaFormateada = fechaActual.format(formatter);
+
         // Cargar eventos desde Firestore
         Utility.getCollectionReferenceForEvents()
-                .orderBy("time", Query.Direction.ASCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     eventList.clear();
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error al cargar eventos", Toast.LENGTH_SHORT).show()
                 );
+
     }
 
     private void newEvent() {
@@ -85,4 +88,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    private void editEvent(){
+        Intent i = new Intent(MainActivity.this, EditEventActivity.class);
+        startActivity(i);
+    }
 }
