@@ -20,10 +20,9 @@ import java.util.List;
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
     private final Context context;
-    private final List<Event> eventList;
+    private List<Event> eventList;
     private final OnEventClickListener onEventClickListener;
 
-    // Interfaz para manejar clics en los eventos
     public interface OnEventClickListener {
         void onEventClick(Event event);
     }
@@ -34,6 +33,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         this.onEventClickListener = onEventClickListener;
     }
 
+    public void setEventList(List<Event> eventList) {
+        this.eventList = eventList;
+        notifyDataSetChanged();
+    }
     @NonNull
     @Override
     public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -52,7 +55,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         if (event.getLabel() != null && !event.getLabel().isEmpty()) {
             holder.tvLabel.setText(event.getLabel());
         } else {
-            holder.tvLabel.setText("Sin etiqueta");
+            holder.tvLabel.setText(R.string.sin_etiqueta);
         }
 
         holder.cbCircle.setChecked("completado".equals(event.getStatus()));
@@ -79,9 +82,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             String newStatus = isChecked ? "completado" : "pendiente";
             event.setStatus(newStatus);
 
-            if (event.getId() != null) {
+            if (event.getIdEvent() != null) {
                 Utility.getCollectionReferenceForEvents()
-                        .document(event.getId()) // Usa el ID único para identificar el documento
+                        .document(event.getIdEvent())
                         .update("status", newStatus)
                         .addOnSuccessListener(aVoid ->
                                 Toast.makeText(context, "Estado actualizado", Toast.LENGTH_SHORT).show())
@@ -117,14 +120,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
                     onEventClickListener.onEventClick(eventList.get(position));
                 }
             });
-        }
-
-        public void bind(Event event) {
-            tvTitle.setText(event.getTitle());
-            tvLabel.setText(event.getLabel());
-            tvDescription.setText(event.getDescription());
-            tvTime.setText(event.getTime());
-            tvDate.setText(event.getDate());
         }
     }
 }

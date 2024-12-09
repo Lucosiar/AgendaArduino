@@ -25,6 +25,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
@@ -198,18 +200,20 @@ public class AddEventActivity extends AppCompatActivity {
         String eventTime = tvTime.getText().toString();
         String eventLabel = spinnerLabel.getSelectedItem().toString();
 
-        Log.d("EventLabel", eventLabel);
-        Log.d("EventLabel", eventTitle);
-        Log.d("EventLabel", eventDescription);
-        Log.d("EventLabel", eventDate);
-        Log.d("EventLabel", eventTime);
-
-        if(eventTitle.isEmpty() || eventDescription.isEmpty() || eventDate.isEmpty() || eventTime.isEmpty() || eventLabel.isEmpty() ||
-        eventTitle == null || eventDescription == null || eventDate == null || eventTime == null || eventLabel == null){
+        if(eventTitle.isEmpty() || eventDescription.isEmpty() || eventDate.isEmpty() || eventTime.isEmpty() || eventLabel.isEmpty()){
             Log.w("AddEventActivity", "Campos incompletos");
             Toast.makeText(this, "Please fill in the fields", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser == null){
+            Log.w("AddEventActivity", "Usuario no autenticado");
+            Toast.makeText(this, "Usuario no autenticado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = currentUser.getUid();
 
         Event event = new Event();
         event.setTitle(eventTitle);
@@ -218,6 +222,7 @@ public class AddEventActivity extends AppCompatActivity {
         event.setTime(eventTime);
         event.setLabel(eventLabel);
         event.setStatus("pendiente");
+        event.setIdUser(userId);
 
         saveEventToFirebase(event);
     }
@@ -225,9 +230,12 @@ public class AddEventActivity extends AppCompatActivity {
     private void saveEventToFirebase(Event event) {
         Log.d("AddEventActivity", "Guardando evento en Firebase: " + event);
         DocumentReference documentReference = Utility.getCollectionReferenceForEvents().document();
+        String eventId = documentReference.getId();
+        event.setIdEvent(eventId);
+
         documentReference.set(event).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Log.d("MiLog", "Event saved successfully: " + event.getTitle());
+                Log.d("MiLog", "Event saved successfully: " + event.getTitle() + ", ID: " + eventId);
                 Toast.makeText(AddEventActivity.this, "Evento guardado exitosamente", Toast.LENGTH_SHORT).show();
                 clearForm();
                 navigateToMainActivity();

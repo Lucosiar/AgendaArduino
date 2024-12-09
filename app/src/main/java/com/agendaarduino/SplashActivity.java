@@ -16,7 +16,6 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // Crear un Handler asociado al Main Looper
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             if(currentUser == null){

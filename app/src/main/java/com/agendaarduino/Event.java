@@ -1,30 +1,32 @@
 package com.agendaarduino;
 
 public class Event {
-    private String id;
+    private String idEvent;
     private String title;
     private String description;
     private String label;
     private String date;
     private String time;
-
     private String status;
+    private String idUser;
 
     public Event() {
         // Constructor vacío para Firebase
     }
 
-    public Event(String title, String description, String label, String date, String time, String status) {
+    public Event(String title, String description, String label, String date, String time, String status, String idUser, String idEvent) {
         this.title = title;
         this.description = description;
         this.label = label;
         this.date = date;
         this.time = time;
         this.status = status;
+        this.idUser = idUser;
+        this.idEvent = idEvent;
     }
 
-    public String getId(){
-        return id;
+    public String getIdEvent(){
+        return idEvent;
     }
     public String getTitle() {
         return title;
@@ -50,8 +52,12 @@ public class Event {
         return status;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getIdUser() {
+        return idUser;
+    }
+
+    public void setIdEvent(String idEvent) {
+        this.idEvent = idEvent;
     }
 
     public void setTitle(String title) {
@@ -76,6 +82,10 @@ public class Event {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setIdUser(String idUser) {
+        this.idUser = idUser;
     }
 }
 

@@ -16,4 +16,7 @@
     <string name="client_id">294672174107-vsk4d2pqu7bk9lgvvd9d7tg0u7p74mc5.apps.googleusercontent.com</string>
     <string name="nuevo_evento">Añadir evento</string>
     <string name="fecha_actual">Fecha actual</string>
+    <string name="sin_etiqueta">Sin etiqueta</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
+    <string name="ajustes">Ajustes</string>
 </resources>
