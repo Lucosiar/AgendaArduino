@@ -33,15 +33,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
 
 public class AddEventActivity extends AppCompatActivity {
 
-    private EditText etTitle, etDescription;
+    private EditText etTitleEvent, etDescriptionEvent;
     private Button buttonSaveEvent;
-    private Spinner spinnerLabel;
-    private ImageButton buttonNewLabel, buttonAddDate, buttonAddTime;
-    private TextView tvDate, tvTime;
-
+    private Spinner spinnerLabelEvent, spinnerRecordatoryEvent;
+    private ImageButton buttonNewLabelEvent, buttonAddDateEvent, buttonAddTimeEvent, buttonRecordatoryEvent;
+    private TextView tvDateEvent, tvTimeEvent;
     private ArrayList<String> labels = new ArrayList<>();
     private ArrayAdapter<String>labelAdapter;
     private int selectedHour, selectedMinute;
@@ -53,13 +53,22 @@ public class AddEventActivity extends AppCompatActivity {
 
         initialize();
 
-        Log.d("AddEventActivity", "onCreate: Inicializando Spinner y adaptador");
+        // Configuración de spinner para las opciones de recordatorio
+        String[] recordatoryOptions = {"Sin recordatorio", "15 minutos", "30 minutos", "1 hora"};
+        ArrayAdapter<String> recordatoryAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                recordatoryOptions
+        );
+        recordatoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerRecordatoryEvent.setAdapter(recordatoryAdapter);
+
+        // Configuración de spinner para las opciones de las etiquetas
         labelAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, labels);
         labelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLabel.setAdapter(labelAdapter);
+        spinnerLabelEvent.setAdapter(labelAdapter);
 
-        Log.d("AddEventActivity", "onCreate: Configurando OnItemSelectedListener para el Spinner");
-        spinnerLabel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerLabelEvent.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("Spinner", "Etiqueta seleccionada: " + labels.get(position));
@@ -71,14 +80,23 @@ public class AddEventActivity extends AppCompatActivity {
             }
         });
 
-        Log.d("AddEventActivity", "onCreate: Cargando etiquetas desde Firestore");
+        // Cargar las etiquetas del usuario desde Firestore
         loadLabelsFromFirestore();
 
+        // Boton de guardar evento
         buttonSaveEvent.setOnClickListener((view -> saveEvent()));
-        buttonNewLabel.setOnClickListener((view -> showAddLabelDialog()));
-        buttonAddDate.setOnClickListener((view -> showDatePickerDialog()));
-        buttonAddTime.setOnClickListener((view -> showTimePickerDialog()));
 
+        // Boton para crear una nueva etiqueta
+        buttonNewLabelEvent.setOnClickListener((view -> showAddLabelDialog()));
+
+        // Boton para mostrar los selectores para la fecha y hora
+        buttonAddDateEvent.setOnClickListener((view -> showDatePickerDialog()));
+        buttonAddTimeEvent.setOnClickListener((view -> showTimePickerDialog()));
+        buttonRecordatoryEvent.setOnClickListener((view -> showTimePickerDialog()));
+
+        // Textview que muestra también los selectores para la fecha y hora
+        tvDateEvent.setOnClickListener((view -> showDatePickerDialog()));
+        tvTimeEvent.setOnClickListener((view -> showTimePickerDialog()));
 
     }
 
@@ -90,24 +108,26 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     public void initialize(){
-        etTitle = findViewById(R.id.etTitle);
-        etDescription = findViewById(R.id.etDescription);
-        tvDate = findViewById(R.id.tvDate);
-        tvTime = findViewById(R.id.tvTime);
+        etTitleEvent = findViewById(R.id.etTitleEvent);
+        etDescriptionEvent = findViewById(R.id.etDescriptionEvent);
+        tvDateEvent = findViewById(R.id.tvDateEvent);
+        tvTimeEvent = findViewById(R.id.tvTimeEvent);
 
-        spinnerLabel = findViewById(R.id.spinnerLabel);
+        spinnerLabelEvent = findViewById(R.id.spinnerLabelEvent);
+        spinnerRecordatoryEvent = findViewById(R.id.spinnerRecordatoryEvent);
 
         buttonSaveEvent = findViewById(R.id.buttonSaveEvent);
-        buttonNewLabel = findViewById(R.id.buttonNewLabel);
-        buttonAddDate = findViewById(R.id.buttonAddDate);
-        buttonAddTime = findViewById(R.id.buttonAddTime);
+        buttonNewLabelEvent = findViewById(R.id.buttonNewLabelEvent);
+        buttonAddDateEvent = findViewById(R.id.buttonAddDateEvent);
+        buttonAddTimeEvent = findViewById(R.id.buttonAddTimeEvent);
+        buttonRecordatoryEvent = findViewById(R.id.buttonRecordatoryEvent);
     }
 
     private void showTimePickerDialog() {
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
             selectedHour = hourOfDay;
             selectedMinute = minute;
-            tvTime.setText(String.format("%02d:%02d", hourOfDay, minute));
+            tvTimeEvent.setText(String.format("%02d:%02d", hourOfDay, minute));
         }, selectedHour, selectedMinute, true);
         timePickerDialog.show();
     }
@@ -119,14 +139,13 @@ public class AddEventActivity extends AppCompatActivity {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDay) -> {
-            tvDate.setText(String.format("%04d/%02d/%02d", selectedYear, selectedMonth + 1, selectedDay));
+            tvDateEvent.setText(String.format("%04d/%02d/%02d", selectedYear, selectedMonth + 1, selectedDay));
         }, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
 
     private void showAddLabelDialog() {
-        Log.d("AddEventActivity", "Mostrando cuadro de diálogo para añadir etiqueta");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Añadir etiqueta");
 
@@ -136,12 +155,10 @@ public class AddEventActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Añadir", (dialog, which) -> {
             String newLabel = input.getText().toString().trim();
-            Log.d("AddEventActivity", "Etiqueta ingresada: " + newLabel);
             if (!newLabel.isEmpty() && !labels.contains(newLabel)) {
                 newLabel = capitalizeFirstLetter(newLabel);
                 saveLabelToFirebase(newLabel);
             } else {
-                Log.w("AddEventActivity", "Etiqueta inválida o ya existente");
                 Toast.makeText(this, "Etiqueta inválida o ya existente", Toast.LENGTH_SHORT).show();
             }
         });
@@ -157,14 +174,23 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     private void saveLabelToFirebase(String label) {
-        Log.d("AddEventActivity", "Guardando etiqueta en Firebase: " + label);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(this, "Usuario no autenticado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = currentUser.getUid();
+
+        Map<String, Object> labelData = new HashMap<>();
+        labelData.put("userId", userId);
+
         DocumentReference docRef = Utility.getCollectionReferenceForLabels().document(label);
-        docRef.set(new HashMap<>()).addOnSuccessListener(aVoid -> {
-            Log.d("AddEventActivity", "Etiqueta guardada con éxito");
+        docRef.set(labelData).addOnSuccessListener(aVoid -> {
             if (!labels.contains(label)) {
                 labels.add(label);
                 labelAdapter.notifyDataSetChanged();
-                spinnerLabel.setSelection(labels.indexOf(label));
+                spinnerLabelEvent.setSelection(labels.indexOf(label));
             }
             Toast.makeText(this, "Etiqueta guardada y añadida al Spinner", Toast.LENGTH_SHORT).show();
         }).addOnFailureListener(e ->
@@ -172,43 +198,56 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     private void loadLabelsFromFirestore() {
-        Log.d("AddEventActivity", "Cargando etiquetas desde Firestore");
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(this, "Usuario no autenticado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = currentUser.getUid();
+
         labels.clear();
         labels.add("Sin etiqueta");
 
-        Utility.getCollectionReferenceForLabels().get().addOnSuccessListener(queryDocumentSnapshots -> {
-            if (!queryDocumentSnapshots.isEmpty()) {
-                for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                    String label = document.getId();
-                    Log.d("AddEventActivity", "Etiqueta encontrada: " + label);
-                    if (!labels.contains(label)) {
-                        labels.add(label);
+        Utility.getCollectionReferenceForLabels()
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                            String label = document.getId();
+                            if (!labels.contains(label)) {
+                                labels.add(label);
+                            }
+                        }
                     }
-                }
-            }
-            labelAdapter.notifyDataSetChanged();
-        }).addOnFailureListener(e ->{
-                    Log.e("AddEventActivity", "Error al guardar etiqueta", e);
+                    labelAdapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error al cargar etiquetas", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    private void saveEvent() {
-        String eventTitle = etTitle.getText().toString();
-        String eventDescription = etDescription.getText().toString();
-        String eventDate = tvDate.getText().toString();
-        String eventTime = tvTime.getText().toString();
-        String eventLabel = spinnerLabel.getSelectedItem().toString();
 
-        if(eventTitle.isEmpty() || eventDescription.isEmpty() || eventDate.isEmpty() || eventTime.isEmpty() || eventLabel.isEmpty()){
-            Log.w("AddEventActivity", "Campos incompletos");
+    private void saveEvent() {
+        String eventTitle = etTitleEvent.getText().toString();
+        String eventDescription = etDescriptionEvent.getText().toString();
+        String eventDate = tvDateEvent.getText().toString();
+        String eventTime = tvTimeEvent.getText().toString();
+        String eventLabel = spinnerLabelEvent.getSelectedItem().toString();
+        String eventRecordatory = spinnerRecordatoryEvent.getSelectedItem().toString();
+
+        if(eventTitle.isEmpty() || eventDate.isEmpty() || eventTime.isEmpty() || eventLabel.isEmpty() || eventRecordatory.isEmpty()){
             Toast.makeText(this, "Please fill in the fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        if(eventDescription.isEmpty()){
+            eventDescription = "Sin descripción";
+        }
+
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if(currentUser == null){
-            Log.w("AddEventActivity", "Usuario no autenticado");
             Toast.makeText(this, "Usuario no autenticado", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -221,6 +260,7 @@ public class AddEventActivity extends AppCompatActivity {
         event.setDate(eventDate);
         event.setTime(eventTime);
         event.setLabel(eventLabel);
+        event.setRecordatory(eventRecordatory);
         event.setStatus("pendiente");
         event.setIdUser(userId);
 
@@ -228,30 +268,28 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     private void saveEventToFirebase(Event event) {
-        Log.d("AddEventActivity", "Guardando evento en Firebase: " + event);
         DocumentReference documentReference = Utility.getCollectionReferenceForEvents().document();
         String eventId = documentReference.getId();
         event.setIdEvent(eventId);
 
         documentReference.set(event).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Log.d("MiLog", "Event saved successfully: " + event.getTitle() + ", ID: " + eventId);
                 Toast.makeText(AddEventActivity.this, "Evento guardado exitosamente", Toast.LENGTH_SHORT).show();
                 clearForm();
                 navigateToMainActivity();
             } else {
-                Log.e("MiLog", "Error saving event", task.getException());
                 Toast.makeText(AddEventActivity.this, "Error al guardar el evento", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void clearForm() {
-        etTitle.setText("");
-        etDescription.setText("");
-        tvDate.setText("");
-        tvTime.setText("");
-        spinnerLabel.setSelection(0);
+        etTitleEvent.setText("");
+        etDescriptionEvent.setText("");
+        tvDateEvent.setText("");
+        tvTimeEvent.setText("");
+        spinnerLabelEvent.setSelection(0);
+        spinnerRecordatoryEvent.setSelection(0);
     }
 
     private void navigateToMainActivity() {

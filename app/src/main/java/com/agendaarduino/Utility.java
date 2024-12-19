@@ -14,6 +14,10 @@ public class Utility {
         return FirebaseFirestore.getInstance().collection("events");
     }
 
+    public static CollectionReference getCollectionReferenceForRoutines(){
+        return FirebaseFirestore.getInstance().collection("routine");
+    }
+
     public static CollectionReference getCollectionReferenceForLabels(){
         return FirebaseFirestore.getInstance().collection("labels");
     }

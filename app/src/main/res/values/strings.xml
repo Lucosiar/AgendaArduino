@@ -1,5 +1,41 @@
 <resources>
     <string name="app_name">Asistente</string>
+    <!-- Selecion -->
+    <string name="selecciona_la_hora">Selecciona la hora</string>
+    <string name="seleciona_la_fecha">Seleciona la fecha</string>
+
+    <!-- Añadir -->
+    <string name="add_labels">Añadir etiqueta</string>
+    <string name="add_routines">Añadir rutinas</string>
+    <string name="add_events">Añadir evento</string>
+
+    <string name="add_new_event_textView">Añade un nuevo evento</string>
+    <string name="add_new_routine_textView">Añade una nueva rutina</string>
+
+    <!-- Acciones -->
+    <string name="new_action">Nueva acción</string>
+    <string name="ajustes">Ajustes</string>
+    <string name="all_events">Todos los eventos</string>
+    <string name="aceptar">Aceptar</string>
+
+    <!-- Varios -->
+    <string name="fecha_actual">Fecha actual</string>
+    <string name="sin_etiqueta">Sin etiqueta</string>
+    <string name="recordatorio">Recordatorio</string>
+    <string name="description">Descripción</string>
+    <string name="title">Título</string>
+    <string name="seleccionar_dias">Seleccionar días</string>
+
+    <!-- Dias semana-->
+    <string name="lunes">Lunes</string>
+    <string name="martes">Martes</string>
+    <string name="miercoles">Miércoles</string>
+    <string name="jueves">Jueves</string>
+    <string name="viernes">Viernes</string>
+    <string name="sabado">Sábado</string>
+    <string name="domingo">Domingo</string>
+
+    <!-- Registro / Login / Logout -->
     <string name="crear_cuenta">Crear cuenta</string>
     <string name="registro">Registro</string>
     <string name="email">Email</string>
@@ -10,13 +46,11 @@
     <string name="recordarContra">Recordar contraseña</string>
     <string name="no_cuenta">¿No tienes cuenta?</string>
     <string name="registrate">Registrate</string>
-    <string name="selecciona_la_hora">Selecciona la hora</string>
-    <string name="seleciona_la_fecha">Seleciona la fecha</string>
-    <string name="nueva_etiqueta">Añadir etiqueta</string>
-    <string name="client_id">294672174107-vsk4d2pqu7bk9lgvvd9d7tg0u7p74mc5.apps.googleusercontent.com</string>
-    <string name="nuevo_evento">Añadir evento</string>
-    <string name="fecha_actual">Fecha actual</string>
-    <string name="sin_etiqueta">Sin etiqueta</string>
     <string name="cerrar_sesion">Cerrar sesión</string>
-    <string name="ajustes">Ajustes</string>
+
+
+    <!-- Otros -->
+    <string name="client_id">294672174107-vsk4d2pqu7bk9lgvvd9d7tg0u7p74mc5.apps.googleusercontent.com</string>
+
+
 </resources>

@@ -23,7 +23,7 @@
             android:layout_height="100dp"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            app:srcCompat="@drawable/new_account" />
+            android:src="@drawable/new_account" />
 
         <TextView
             android:id="@+id/tvRegistro"

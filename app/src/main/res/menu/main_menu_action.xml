@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/add_events"
+        android:title="@string/add_events" />
+    <item
+        android:id="@+id/add_routines"
+        android:title="@string/add_routines" />
+    <item
+        android:id="@+id/prueba1"
+        android:title="prueba" />
+
+</menu>

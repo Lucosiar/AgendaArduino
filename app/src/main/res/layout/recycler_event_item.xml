@@ -16,14 +16,14 @@
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/custom_checkbox"
+            android:background="@drawable/custom_checkbox_event"
             android:button="@null" />
 
         <LinearLayout
             android:id="@+id/eventLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/backgroud_recycler"
+            android:background="@drawable/backgroud_recycler_event"
             android:orientation="vertical">
 
             <LinearLayout

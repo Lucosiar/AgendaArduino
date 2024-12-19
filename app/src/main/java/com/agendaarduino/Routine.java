@@ -1,39 +1,42 @@
 package com.agendaarduino;
 
-public class Event {
-    private String idEvent;
+public class Routine {
+
+    private String idRoutine;
     private String title;
     private String description;
     private String label;
-    private String date;
+    private String daysOfWeek;
     private String time;
-    private String status;
+    private String statusDay;
     private String recordatory;
     private String idUser;
 
     // Constructores
-    public Event() {
+    public Routine() {
         // Constructor vacío para Firebase
     }
 
-    public Event(String title, String description, String label, String status, String recordatory,
-                 String date, String time,
-                 String idUser, String idEvent) {
+    public Routine(String title, String description, String label,
+                   String daysOfWeek, String time,
+                   String statusDay, String recordatory, String idUser) {
         this.title = title;
         this.description = description;
         this.label = label;
-        this.date = date;
+        this.daysOfWeek = daysOfWeek;
         this.time = time;
-        this.status = status;
-        this.idUser = idUser;
-        this.idEvent = idEvent;
+        this.statusDay = statusDay;
         this.recordatory = recordatory;
+        this.idUser = idUser;
+
     }
 
     // Getters
-    public String getIdEvent(){
-        return idEvent;
+
+    public String getIdRoutine() {
+        return idRoutine;
     }
+
     public String getTitle() {
         return title;
     }
@@ -46,28 +49,30 @@ public class Event {
         return label;
     }
 
-    public String getDate() {
-        return date;
+    public String getDaysOfWeek() {
+        return daysOfWeek;
     }
 
     public String getTime() {
         return time;
     }
 
-    public String getStatus() {
-        return status;
+    public String getStatusDay() {
+        return statusDay;
+    }
+
+    public String getRecordatory() {
+        return recordatory;
     }
 
     public String getIdUser() {
         return idUser;
     }
-    public String getRecordatory() {
-        return recordatory;
-    }
+
 
     // Setters
-    public void setIdEvent(String idEvent) {
-        this.idEvent = idEvent;
+    public void setIdRoutine(String idRoutine) {
+        this.idRoutine = idRoutine;
     }
 
     public void setTitle(String title) {
@@ -82,23 +87,24 @@ public class Event {
         this.label = label;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setDaysOfWeek(String daysOfWeek) {
+        this.daysOfWeek = daysOfWeek;
     }
 
     public void setTime(String time) {
         this.time = time;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatusDay(String statusDay) {
+        this.statusDay = statusDay;
+    }
+
+    public void setRecordatory(String recordatory) {
+        this.recordatory = recordatory;
     }
 
     public void setIdUser(String idUser) {
         this.idUser = idUser;
     }
-    public void setRecordatory(String recordatory) {
-        this.recordatory = recordatory;
-    }
-}
 
+}

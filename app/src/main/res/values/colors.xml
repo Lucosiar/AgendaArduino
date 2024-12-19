@@ -2,8 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimary">#FF475BFB</color>
+    <color name="colorPrimary">#475BFB</color>
     <color name="colorSecundary">#58F3C5</color>
+    <color name="colorTertiary">#8C47FB</color>
     <color name="background_color">@color/white</color>
     <color name="text_color">@color/black</color>
     <color name="delayed_event">#D83434</color>

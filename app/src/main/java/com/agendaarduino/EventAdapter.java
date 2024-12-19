@@ -14,7 +14,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
@@ -35,12 +38,27 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     public void setEventList(List<Event> eventList) {
         this.eventList = eventList;
+        sortEventsByDateAndTime();
         notifyDataSetChanged();
     }
+
+    private void sortEventsByDateAndTime() {
+        Collections.sort(eventList, new Comparator<Event>() {
+            @Override
+            public int compare(Event event1, Event event2) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+                LocalDateTime dateTime1 = LocalDateTime.parse(event1.getDate() + " " + event1.getTime(), formatter);
+                LocalDateTime dateTime2 = LocalDateTime.parse(event2.getDate() + " " + event2.getTime(), formatter);
+
+                return dateTime1.compareTo(dateTime2);
+            }
+        });
+    }
+
     @NonNull
     @Override
     public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.recycler_note_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.recycler_event_item, parent, false);
         return new EventViewHolder(view);
     }
 
@@ -58,6 +76,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             holder.tvLabel.setText(R.string.sin_etiqueta);
         }
 
+        if ("Sin descripción".equals(event.getDescription())) {
+            holder.tvDescription.setVisibility(View.GONE);
+        } else {
+            holder.tvDescription.setVisibility(View.VISIBLE);
+            holder.tvDescription.setText(event.getDescription());
+        }
+
         holder.cbCircle.setChecked("completado".equals(event.getStatus()));
 
         LocalDate fechaActual = LocalDate.now();
@@ -68,7 +93,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         if (fechaEvento.isBefore(fechaActual)) {
             holder.eventLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.background_recycler_delayed));
         } else {
-            holder.eventLayout.setBackgroundResource(R.drawable.backgroud_recycler);
+            holder.eventLayout.setBackgroundResource(R.drawable.backgroud_recycler_event);
         }
 
         if (fechaHoy.equals(event.getDate())) {

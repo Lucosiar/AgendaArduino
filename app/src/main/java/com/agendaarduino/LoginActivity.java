@@ -47,10 +47,8 @@ public class LoginActivity extends AppCompatActivity {
 
         variablesInitialization();
 
-        // Inicializar Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        // Configurar Google Sign-In usando la nueva API
         mSignInClient = Identity.getSignInClient(this);
 
         buttonLogin.setOnClickListener(v -> login());
@@ -58,8 +56,6 @@ public class LoginActivity extends AppCompatActivity {
         tvRegistrate.setOnClickListener(v -> navigateToRegister());
         tvPasswordRemember.setOnClickListener(v -> forgotPassword());
         imageChrome.setOnClickListener(v -> loginWithGoogle());
-        
-
     }
 
     public void variablesInitialization(){
@@ -73,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginWithGoogle() {
-
+        // Inicio de sesion con Google
     }
 
     private void forgotPassword() {
@@ -112,7 +108,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login(){
-        Toast.makeText(this, "Click en Login boton", Toast.LENGTH_SHORT).show();
         String email = etEmailLogin.getText().toString();
         String password = etPasswordLogin.getText().toString();
 
@@ -142,8 +137,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-
-
     }
 
     private void navigateToMain(){
@@ -164,10 +157,7 @@ public class LoginActivity extends AppCompatActivity {
         if(password.length() < 6){
             etPasswordLogin.setError("Password length is invalid");
             return false;
-
         }
         return true;
     }
-
-
 }
