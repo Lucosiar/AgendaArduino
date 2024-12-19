@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@drawable/backgroud_recycler_event" />
-    <foreground android:drawable="@drawable/backgroud_recycler_event" />
-    <monochrome android:drawable="@drawable/backgroud_recycler_event" />
+    <background android:drawable="@drawable/backgroud_recycler" />
+    <foreground android:drawable="@drawable/backgroud_recycler" />
+    <monochrome android:drawable="@drawable/backgroud_recycler" />
 </adaptive-icon>

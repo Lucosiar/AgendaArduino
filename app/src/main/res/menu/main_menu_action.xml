@@ -6,8 +6,5 @@
     <item
         android:id="@+id/add_routines"
         android:title="@string/add_routines" />
-    <item
-        android:id="@+id/prueba1"
-        android:title="prueba" />
 
 </menu>

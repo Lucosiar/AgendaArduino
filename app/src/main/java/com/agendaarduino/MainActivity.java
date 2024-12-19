@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.Query;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -23,14 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import kotlin.OptionalExpectation;
-
 public class MainActivity extends AppCompatActivity {
 
     private ImageButton buttonNewAction;
     private TextView tvDiaActual;
     private RecyclerView recyclerView;
-    private EventAdapter eventAdapter;
+    private ActionAdapter actionAdapter;
     private ImageView buttonSettings;
 
 
@@ -62,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         buttonSettings.setOnClickListener(v -> openSettings());
         setUpRecyclerView();
 
-        loadUserEvent();
+        loadUserAction();
     }
 
     private void openNewAction(){
@@ -76,10 +73,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.add_routines) {
                 newRoutine();
                 return true;
-            } else if (item.getItemId() == R.id.prueba1) {
-                Toast.makeText(MainActivity.this, "Prueba 1", Toast.LENGTH_SHORT).show();
-                return true;
-            }else{
+            } else{
                 return false;
             }
         });
@@ -102,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
             else if(item.getItemId() == R.id.add_routines){
-                showAllEvents();
+                showAllRoutines();
                 return true;
             }
             else {
@@ -110,6 +104,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         popupMenu.show();
+    }
+
+    // Cambiar a ver todas las rutinas
+    private void showAllRoutines() {
+        Intent i = new Intent(MainActivity.this, AllEventsActivity.class);
+        startActivity(i);
     }
 
     private void showAllEvents() {
@@ -132,19 +132,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUpRecyclerView() {
-        List<Event> eventList = new ArrayList<>();
-        eventAdapter = new EventAdapter(this, eventList, event -> editEvent());
+        List<Action> actionList = new ArrayList<>();
+        actionAdapter = new ActionAdapter(this, actionList, action -> editAction());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(eventAdapter);
+        recyclerView.setAdapter(actionAdapter);
     }
 
-    private void loadUserEvent(){
+    private void loadUserAction(){
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        LocalDate fechaActual = LocalDate.now();
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+        List<Action> todayActions = new ArrayList<>();
 
         Utility.getCollectionReferenceForEvents()
-                .whereEqualTo("idUser", currentUserId)  // Filtra por usuario
+                .whereEqualTo("idUser", currentUserId) // Filtra por usuario
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
                     if (e != null) {
                         Toast.makeText(MainActivity.this, "Error al cargar eventos", Toast.LENGTH_SHORT).show();
@@ -152,24 +155,47 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     if (queryDocumentSnapshots != null) {
-                        List<Event> eventList = new ArrayList<>();
                         for (DocumentSnapshot doc : queryDocumentSnapshots) {
                             Event event = doc.toObject(Event.class);
                             if (event != null) {
-                                LocalDate fechaEvento = LocalDate.parse(event.getDate(), DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-
-                                // Filtra eventos de días anteriores solo si son "pendientes"
-                                if (fechaEvento.isBefore(fechaActual) && "pendiente".equals(event.getStatus())) {
-                                    eventList.add(event);
-                                }
-                                // En el caso del día actual, agregar todos los eventos sin importar el estado
-                                else if (fechaEvento.equals(fechaActual)) {
-                                    eventList.add(event);
+                                LocalDate eventDate = LocalDate.parse(event.getDate(), dateFormatter);
+                                if (eventDate.equals(today)) {
+                                    todayActions.add(event);
                                 }
                             }
                         }
-                        eventAdapter.setEventList(eventList);
                     }
+
+                    // Después de cargar eventos, cargar rutinas
+                    loadUserRoutinesForToday(currentUserId, todayActions);
+                });
+    }
+
+    private void loadUserRoutinesForToday(String userId, List<Action> todayActions) {
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("EEEE", new Locale("es", "ES"));
+
+        String todayDayOfWeek = today.format(dayFormatter);
+
+        Utility.getCollectionReferenceForRoutines()
+                .whereEqualTo("idUser", userId)
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        Toast.makeText(MainActivity.this, "Error al cargar rutinas", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (queryDocumentSnapshots != null) {
+                        for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                            Routine routine = doc.toObject(Routine.class);
+                            if (routine != null) {
+                                if (routine.getDaysOfWeek().toLowerCase().contains(todayDayOfWeek.toLowerCase())) {
+                                    todayActions.add(routine);
+                                }
+                            }
+                        }
+                    }
+                    actionAdapter.setActionList(todayActions);
                 });
     }
 
@@ -183,13 +209,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    private void editEvent(){
-        Intent i = new Intent(MainActivity.this, EditEventActivity.class);
-        startActivity(i);
+    private void editAction(){
+        // Editar accion
+        // Si es evento va a cambiar evento y si es rutina, cambia la rutina.
     }
 
     private void inicialice(){
-        // Inicialización
         buttonNewAction = findViewById(R.id.buttonNewAction);
         tvDiaActual = findViewById(R.id.tvDiaActual);
         recyclerView = findViewById(R.id.recyclerView);
