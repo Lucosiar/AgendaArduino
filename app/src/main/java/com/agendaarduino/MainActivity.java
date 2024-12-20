@@ -2,6 +2,7 @@ package com.agendaarduino;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -18,6 +19,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -139,37 +141,42 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(actionAdapter);
     }
 
-    private void loadUserAction(){
+    private void loadUserAction() {
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        LocalDate fechaActual = LocalDate.now();
+        String diaActual = fechaActual.getDayOfWeek()
+                .getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
 
-        List<Action> todayActions = new ArrayList<>();
+        diaActual = diaActual.substring(0, 1).toUpperCase() + diaActual.substring(1).toLowerCase();
+
+        // Usar una estructura mutable
+        List<Action> allActions = new ArrayList<>();
 
         Utility.getCollectionReferenceForEvents()
-                .whereEqualTo("idUser", currentUserId) // Filtra por usuario
+                .whereEqualTo("idUser", currentUserId)
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
                     if (e != null) {
-                        Toast.makeText(MainActivity.this, "Error al cargar eventos", Toast.LENGTH_SHORT).show();
+                        Log.e("DEBUG", "Error al cargar eventos", e);
                         return;
                     }
 
                     if (queryDocumentSnapshots != null) {
+                        List<Action> tempEventList = new ArrayList<>();
                         for (DocumentSnapshot doc : queryDocumentSnapshots) {
                             Event event = doc.toObject(Event.class);
                             if (event != null) {
-                                LocalDate eventDate = LocalDate.parse(event.getDate(), dateFormatter);
-                                if (eventDate.equals(today)) {
-                                    todayActions.add(event);
-                                }
+                                Log.d("DEBUG", "Evento cargado: " + event.getTitle() + " - Fecha: " + event.getDate());
+                                tempEventList.add(event);
                             }
                         }
-                    }
+                        allActions.addAll(tempEventList);
 
-                    // Después de cargar eventos, cargar rutinas
-                    loadUserRoutinesForToday(currentUserId, todayActions);
+                        // Cargar rutinas después de cargar los eventos
+                        loadUserRoutinesForToday(currentUserId, allActions);
+                    }
                 });
     }
+
 
     private void loadUserRoutinesForToday(String userId, List<Action> todayActions) {
         LocalDate today = LocalDate.now();

@@ -1,6 +1,7 @@
 package com.agendaarduino;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +18,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionViewHolder> {
 
     private final Context context;
     private List<Action> actionsList;
-    private List<Event> eventList;
-    private List<Routine> routineList;
     private final OnActionClickListener onActionClickListener;
 
     public interface OnActionClickListener {
@@ -41,18 +39,40 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
 
 
     // ordenar por fecha y hora
-    private void sortEventsByDateAndTime() {
-        /*
-        Collections.sort(actionsList, new Comparator<Event>() {
-            @Override
-            public int compare(Event event1, Event event2) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-                LocalDateTime dateTime1 = LocalDateTime.parse(event1.getDate() + " " + event1.getTime(), formatter);
-                LocalDateTime dateTime2 = LocalDateTime.parse(event2.getDate() + " " + event2.getTime(), formatter);
+    private void sortEventsAndRoutinesByDateAndTime() {
+        if(actionsList == null) return;
 
-                return dateTime1.compareTo(dateTime2);
+        Collections.sort(actionsList, (action1, action2) -> {
+            LocalDateTime dateTime1;
+            LocalDateTime dateTime2;
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+
+            if (action1 instanceof Event) {
+                Event event1 = (Event) action1;
+                dateTime1 = LocalDateTime.parse(event1.getDate() + " " + event1.getTime(), formatter);
+            } else if (action1 instanceof Routine) {
+                Routine routine1 = (Routine) action1;
+                dateTime1 = LocalDateTime.now().withHour(Integer.parseInt(routine1.getTime().split(":")[0]))
+                        .withMinute(Integer.parseInt(routine1.getTime().split(":")[1]));
+            } else {
+                return 0; // Si no es ni Event ni Routine
             }
-        });*/
+
+            if (action2 instanceof Event) {
+                Event event2 = (Event) action2;
+                dateTime2 = LocalDateTime.parse(event2.getDate() + " " + event2.getTime(), formatter);
+            } else if (action2 instanceof Routine) {
+                Routine routine2 = (Routine) action2;
+                dateTime2 = LocalDateTime.now().withHour(Integer.parseInt(routine2.getTime().split(":")[0]))
+                        .withMinute(Integer.parseInt(routine2.getTime().split(":")[1]));
+            } else {
+                return 0;
+            }
+
+            return dateTime1.compareTo(dateTime2);
+        });
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -94,14 +114,16 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         String fechaHoy = fechaActual.format(formatter);
 
         if (action instanceof Event) {
+            Log.d("PRUEBALOG", "Esta acción es un evento: " + ((Event) action).getTitle());
             Event event = (Event) action;
             LocalDate fechaEvento = LocalDate.parse(event.getDate(), formatter);
 
-            // NO FUNCIONA
             if (fechaEvento.isBefore(fechaActual)) {
+                Log.d("PRUEBALOG", "El evento está atrasado: " + event.getTitle());
                 holder.actionLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.background_recycler_delayed));
             } else {
-                holder.actionLayout.setBackgroundResource(R.drawable.backgroud_recycler);
+                Log.d("PRUEBALOG", "El evento es de hoy o futuro: " + event.getTitle());
+                holder.actionLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.backgroud_recycler));
             }
 
             if (fechaHoy.equals(event.getDate())) {
@@ -111,8 +133,12 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                 holder.tvDate.setVisibility(View.VISIBLE);
             }
         } else {
+            Log.d("PRUEBALOG", "Esta acción no es un evento: " + action.getClass().getSimpleName());
             holder.tvDate.setVisibility(View.GONE);
         }
+
+
+
 
 
         holder.cbCircle.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -160,6 +186,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
 
     public void setActionList(List<Action> newActionList) {
         this.actionsList = newActionList;
+        sortEventsAndRoutinesByDateAndTime();
         notifyDataSetChanged();
     }
 

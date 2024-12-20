@@ -7,22 +7,19 @@ public class Action {
     private String label;
     private String status;
     private String recordatory;
-    private String typeAction;
-
     // Constructores
     public Action(){
 
     }
 
     public Action(String title, String description, String time, String label,
-                  String status, String recordatory, String typeAction) {
+                  String status, String recordatory) {
         this.title = title;
         this.description = description;
         this.time = time;
         this.label = label;
         this.status = status;
         this.recordatory = recordatory;
-        this.typeAction = typeAction;
     }
 
     // Getters y setters
@@ -74,11 +71,4 @@ public class Action {
         this.recordatory = recordatory;
     }
 
-    public String getTypeAction() {
-        return typeAction;
-    }
-
-    public void setTypeAction(String typeAction) {
-        this.typeAction = typeAction;
-    }
 }

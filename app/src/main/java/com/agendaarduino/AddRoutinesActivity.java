@@ -330,6 +330,4 @@ public class AddRoutinesActivity extends AppCompatActivity {
         buttonRecordatoryRoutine = findViewById(R.id.buttonRecordatoryRoutine);
         buttonSaveRoutine = findViewById(R.id.buttonSaveRoutine);
     }
-
-
 }
