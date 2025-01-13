@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         loadUserAction();
     }
 
+    // Botón nuevo evento / rutina
     private void openNewAction(){
         PopupMenu popupMenu = new PopupMenu(MainActivity.this, buttonNewAction);
         popupMenu.getMenuInflater().inflate(R.menu.main_menu_action, popupMenu.getMenu());
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
+    // Abrir menú superior
     private void openSettings() {
         PopupMenu popupMenu = new PopupMenu(MainActivity.this, buttonSettings);
         popupMenu.getMenuInflater().inflate(R.menu.main_menu, popupMenu.getMenu());
@@ -114,11 +116,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    // Cambiar pantalla para ver todos los eventos
     private void showAllEvents() {
         Intent i = new Intent(MainActivity.this, AllEventsActivity.class);
         startActivity(i);
     }
 
+    // Cerrar sesión
     private void logout() {
         Toast.makeText(MainActivity.this, "Cerrando sesión", Toast.LENGTH_SHORT).show();
 
@@ -128,11 +132,13 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
+    // Ir a pantalla de ajustes
     private void goToSettings(){
         Intent i = new Intent(MainActivity.this, SettingsActivity.class);
         startActivity(i);
     }
 
+    // Preparamos el recycler para mostrar acciones
     private void setUpRecyclerView() {
         List<Action> actionList = new ArrayList<>();
         actionAdapter = new ActionAdapter(this, actionList, action -> editAction());
@@ -141,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(actionAdapter);
     }
 
+    // Cargamos el usuario y sus acciones
     private void loadUserAction() {
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         LocalDate fechaActual = LocalDate.now();
@@ -177,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-
+    // Cargamos las rutinas del usuario para el día de hoy
     private void loadUserRoutinesForToday(String userId, List<Action> todayActions) {
         LocalDate today = LocalDate.now();
         DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("EEEE", new Locale("es", "ES"));
@@ -206,16 +213,19 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    // Creación de nuevos eventos
     private void newEvent() {
         Intent i = new Intent(MainActivity.this, AddEventActivity.class);
         startActivity(i);
     }
 
+    // Creación de nuevas rutinas
     private void newRoutine() {
         Intent i = new Intent(MainActivity.this, AddRoutinesActivity.class);
         startActivity(i);
     }
 
+    // Editar una acción
     private void editAction(){
         // Editar accion
         // Si es evento va a cambiar evento y si es rutina, cambia la rutina.

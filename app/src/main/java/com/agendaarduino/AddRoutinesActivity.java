@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -44,15 +47,13 @@ public class AddRoutinesActivity extends AppCompatActivity {
 
     private Spinner spinnerLabelRoutine, spinnerRecordatoryRoutine;
     private EditText etTitleRoutine,etDescriptionRoutine;
-
-    private TextView tvButtonSelectDaysRoutine, tvTimeRoutine;
-
+    private TextView tvButtonSelectDaysRoutine, tvTimeRoutine, tvCheckListRoutine;
     private ImageButton buttonAddTimeRoutine, buttonNewLabelRoutine, buttonRecordatoryRoutine;
     private int selectedHour, selectedMinute;
-
     private ArrayList<String> labels = new ArrayList<>();
     private ArrayAdapter<String> labelAdapter;
     private Button buttonSaveRoutine;
+
 
 
     @Override
@@ -106,6 +107,74 @@ public class AddRoutinesActivity extends AppCompatActivity {
         // Botón guardar routine
         buttonSaveRoutine.setOnClickListener(view -> saveRoutine());
 
+        tvCheckListRoutine.setOnClickListener(view -> popUpCheckList());
+
+    }
+
+    private void popUpCheckList() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View popupView = inflater.inflate(R.layout.popup_add_checklist, null);
+
+        // Creamos el popup view
+        PopupWindow popupWindow = new PopupWindow(
+                popupView,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                true);
+
+        // Mostrar el popup centrado
+        popupWindow.showAtLocation(tvCheckListRoutine, Gravity.CENTER, 0, 0);
+
+        // Referencias a los elementos del popup
+        EditText editTextChecklistItem = popupView.findViewById(R.id.editTextChecklistItem);
+        Button btnDone = popupView.findViewById(R.id.buttonSaveChecklist);
+
+        // Referencia al contenedor en activity_add_routine.xml
+        LinearLayout checkListContainer = findViewById(R.id.checkListContainer);
+
+        // Scroll bar
+        ScrollView scrollView = findViewById(R.id.scrollViewRoutines);
+        scrollView.setVerticalScrollBarEnabled(false); // Oculta la barra vertical
+        scrollView.setHorizontalScrollBarEnabled(false); // Oculta la barra horizontal
+
+
+        // Configurar el botón para agregar una nueva tarea al contenedor
+        btnDone.setOnClickListener(v -> {
+            String newTask = editTextChecklistItem.getText().toString().trim();
+
+            if (!newTask.isEmpty()) {
+                // Crear un nuevo TextView para mostrar la tarea
+                TextView newTaskTextView = new TextView(this);
+                newTaskTextView.setText(newTask);
+                newTaskTextView.setTextSize(16);
+                newTaskTextView.setPadding(10, 10, 10, 10);
+                newTaskTextView.setTextColor(getResources().getColor(R.color.text_color, null));
+
+                // Agregar el nuevo TextView al contenedor
+                checkListContainer.addView(newTaskTextView);
+
+                // Limpiar el EditText
+                editTextChecklistItem.setText("");
+            }
+
+            // Cerrar el popup
+            popupWindow.dismiss();
+        });
+    }
+
+    private List<String> getChecklistItems() {
+        List<String> checklistItems = new ArrayList<>();
+        LinearLayout checkListContainer = findViewById(R.id.checkListContainer);
+
+        for (int i = 0; i < checkListContainer.getChildCount(); i++) {
+            View child = checkListContainer.getChildAt(i);
+            if (child instanceof TextView) {
+                String item = ((TextView) child).getText().toString();
+                checklistItems.add(item);
+            }
+        }
+
+        return checklistItems;
     }
 
     private void openSelectDaysRoutine() {
@@ -191,7 +260,12 @@ public class AddRoutinesActivity extends AppCompatActivity {
         String routineLabel = spinnerLabelRoutine.getSelectedItem().toString();
         String routineRecordatory = spinnerRecordatoryRoutine.getSelectedItem().toString();
 
-        if(routineTitle.isEmpty() || routineDay.isEmpty() || routineTime.isEmpty()
+        if (routineDay.isEmpty() || routineDay.equals(getString(R.string.seleccionar_dias))) {
+            Toast.makeText(this, "Por favor selecciona al menos un día válido", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(routineTitle.isEmpty() || routineTime.isEmpty()
                 || routineLabel.isEmpty() || routineRecordatory.isEmpty()){
             Toast.makeText(this, "Please fill in the fields", Toast.LENGTH_SHORT).show();
             return;
@@ -216,8 +290,11 @@ public class AddRoutinesActivity extends AppCompatActivity {
         routine.setTime(routineTime);
         routine.setLabel(routineLabel);
         routine.setRecordatory(routineRecordatory);
-        routine.setStatusDay("pendiente");
+        //routine.setStatusDay("pendiente");
         routine.setIdUser(userId);
+
+        List<String> checklistItems = getChecklistItems();
+        routine.setChecklist(checklistItems);
 
         saveRoutineToFirebase(routine);
     }
@@ -324,10 +401,12 @@ public class AddRoutinesActivity extends AppCompatActivity {
 
         tvButtonSelectDaysRoutine = findViewById(R.id.tvButtonSelectDaysRoutine);
         tvTimeRoutine = findViewById(R.id.tvTimeRoutine);
+        tvCheckListRoutine = findViewById(R.id.tvCheckListRoutine);
 
         buttonAddTimeRoutine = findViewById(R.id.buttonAddTimeRoutine);
         buttonNewLabelRoutine = findViewById(R.id.buttonNewLabelRoutine);
         buttonRecordatoryRoutine = findViewById(R.id.buttonRecordatoryRoutine);
         buttonSaveRoutine = findViewById(R.id.buttonSaveRoutine);
+
     }
 }

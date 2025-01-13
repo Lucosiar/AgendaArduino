@@ -17,8 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionViewHolder> {
 
@@ -32,20 +37,19 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
 
     public ActionAdapter(Context context, List<Action> actionsList, OnActionClickListener onActionClickListener) {
         this.context = context;
-        this.actionsList = actionsList;
+        this.actionsList = new ArrayList<>(new HashSet<>(actionsList));
         this.onActionClickListener = onActionClickListener;
+        sortEventsAndRoutinesByDateAndTime();
     }
 
-
-
     // ordenar por fecha y hora
+    // Método para ordenar acciones por fecha y hora
     private void sortEventsAndRoutinesByDateAndTime() {
-        if(actionsList == null) return;
+        if (actionsList == null) return;
 
         Collections.sort(actionsList, (action1, action2) -> {
             LocalDateTime dateTime1;
             LocalDateTime dateTime2;
-
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 
             if (action1 instanceof Event) {
@@ -53,7 +57,8 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                 dateTime1 = LocalDateTime.parse(event1.getDate() + " " + event1.getTime(), formatter);
             } else if (action1 instanceof Routine) {
                 Routine routine1 = (Routine) action1;
-                dateTime1 = LocalDateTime.now().withHour(Integer.parseInt(routine1.getTime().split(":")[0]))
+                dateTime1 = LocalDateTime.now()
+                        .withHour(Integer.parseInt(routine1.getTime().split(":")[0]))
                         .withMinute(Integer.parseInt(routine1.getTime().split(":")[1]));
             } else {
                 return 0; // Si no es ni Event ni Routine
@@ -64,7 +69,8 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                 dateTime2 = LocalDateTime.parse(event2.getDate() + " " + event2.getTime(), formatter);
             } else if (action2 instanceof Routine) {
                 Routine routine2 = (Routine) action2;
-                dateTime2 = LocalDateTime.now().withHour(Integer.parseInt(routine2.getTime().split(":")[0]))
+                dateTime2 = LocalDateTime.now()
+                        .withHour(Integer.parseInt(routine2.getTime().split(":")[0]))
                         .withMinute(Integer.parseInt(routine2.getTime().split(":")[1]));
             } else {
                 return 0;
@@ -72,7 +78,6 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
 
             return dateTime1.compareTo(dateTime2);
         });
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -87,25 +92,15 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
     public void onBindViewHolder(@NonNull ActionViewHolder holder, int position) {
         Action action = actionsList.get(position);
 
+        // Configurar las vistas del adaptador
         holder.tvTitle.setText(action.getTitle());
         holder.tvDescription.setText(action.getDescription());
         holder.tvTime.setText(action.getTime());
         holder.tvLabel.setText(action.getLabel());
 
-        if(action.getLabel() != null && !action.getLabel().isEmpty()){
-            holder.tvLabel.setText(action.getLabel());
-        }else{
-            holder.tvLabel.setVisibility(View.INVISIBLE);
-        }
-
-        if ("Sin descripción".equals(action.getDescription())) {
-            holder.tvDescription.setVisibility(View.GONE);
-        } else {
-            holder.tvDescription.setVisibility(View.VISIBLE);
-            holder.tvDescription.setText(action.getDescription());
-        }
-
-        holder.cbCircle.setChecked("completado".equals(action.getStatus()));
+        // Si la etiqueta / descripción está vacía, no se muestra
+        holder.tvLabel.setVisibility(action.getLabel() == null || action.getLabel().isEmpty() ? View.INVISIBLE : View.VISIBLE);
+        holder.tvDescription.setVisibility("Sin descripción".equals(action.getDescription()) ? View.GONE : View.VISIBLE);
 
         holder.cbCircle.setChecked("completado".equals(action.getStatus()));
 
@@ -114,7 +109,6 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         String fechaHoy = fechaActual.format(formatter);
 
         if (action instanceof Event) {
-            Log.d("PRUEBALOG", "Esta acción es un evento: " + ((Event) action).getTitle());
             Event event = (Event) action;
             LocalDate fechaEvento = LocalDate.parse(event.getDate(), formatter);
 
@@ -138,12 +132,8 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         }
 
 
-
-
-
         holder.cbCircle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             String newStatus = isChecked ? "completado" : "pendiente";
-            action.setStatus(newStatus);
 
             // Actualización para eventos
             if (action instanceof Event) {
@@ -175,8 +165,6 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         });
 
 
-
-
     }
 
     @Override
@@ -184,8 +172,43 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         return actionsList.size();
     }
 
+    // Método para actualizar eventos
+    private void updateEventStatus(Event event, boolean isChecked) {
+        String newStatus = isChecked ? "completado" : "pendiente";
+        if (event.getIdEvent() != null) {
+            Utility.getCollectionReferenceForEvents()
+                    .document(event.getIdEvent())
+                    .update("status", newStatus)
+                    .addOnSuccessListener(aVoid ->
+                            Toast.makeText(context, "Estado del evento actualizado", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e ->
+                            Toast.makeText(context, "Error al actualizar el estado del evento", Toast.LENGTH_SHORT).show());
+        }
+    }
+
+    // Método para actualizar rutinas
+    private void updateRoutineStatus(Routine routine, boolean isChecked) {
+        String newStatus = isChecked ? "completado" : "pendiente";
+        if (routine.getIdRoutine() != null) {
+            Utility.getCollectionReferenceForRoutines()
+                    .document(routine.getIdRoutine())
+                    .update("status", newStatus)
+                    .addOnSuccessListener(aVoid ->
+                            Toast.makeText(context, "Estado de la rutina actualizado", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e ->
+                            Toast.makeText(context, "Error al actualizar el estado de la rutina", Toast.LENGTH_SHORT).show());
+        }
+    }
+
     public void setActionList(List<Action> newActionList) {
-        this.actionsList = newActionList;
+        Map<String, Action> actionMap = new HashMap<>();
+        for (Action action : newActionList) {
+            String id = action instanceof Event ? ((Event) action).getIdEvent() : ((Routine) action).getIdRoutine();
+            if (id != null) {
+                actionMap.put(id, action);
+            }
+        }
+        this.actionsList = new ArrayList<>(actionMap.values());
         sortEventsAndRoutinesByDateAndTime();
         notifyDataSetChanged();
     }
@@ -205,12 +228,6 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             actionLayout = itemView.findViewById(R.id.actionLayout);
             tvDate = itemView.findViewById(R.id.tvDate);
 
-            itemView.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    onActionClickListener.onActionClick(actionsList.get(position));
-                }
-            });
         }
     }
 }

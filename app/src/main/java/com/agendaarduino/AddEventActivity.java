@@ -6,12 +6,17 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +38,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AddEventActivity extends AppCompatActivity {
@@ -41,7 +47,7 @@ public class AddEventActivity extends AppCompatActivity {
     private Button buttonSaveEvent;
     private Spinner spinnerLabelEvent, spinnerRecordatoryEvent;
     private ImageButton buttonNewLabelEvent, buttonAddDateEvent, buttonAddTimeEvent, buttonRecordatoryEvent;
-    private TextView tvDateEvent, tvTimeEvent;
+    private TextView tvDateEvent, tvTimeEvent, tvCheckListEvent;
     private ArrayList<String> labels = new ArrayList<>();
     private ArrayAdapter<String>labelAdapter;
     private int selectedHour, selectedMinute;
@@ -98,6 +104,8 @@ public class AddEventActivity extends AppCompatActivity {
         tvDateEvent.setOnClickListener((view -> showDatePickerDialog()));
         tvTimeEvent.setOnClickListener((view -> showTimePickerDialog()));
 
+        tvCheckListEvent.setOnClickListener((view -> popUpCheckList()));
+
     }
 
 
@@ -121,6 +129,71 @@ public class AddEventActivity extends AppCompatActivity {
         buttonAddDateEvent = findViewById(R.id.buttonAddDateEvent);
         buttonAddTimeEvent = findViewById(R.id.buttonAddTimeEvent);
         buttonRecordatoryEvent = findViewById(R.id.buttonRecordatoryEvent);
+        tvCheckListEvent = findViewById(R.id.tvCheckListEvent);
+    }
+
+    private void popUpCheckList() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View popupView = inflater.inflate(R.layout.popup_add_checklist, null);
+
+        PopupWindow popupWindow = new PopupWindow(
+                popupView,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                true);
+
+        popupWindow.showAtLocation(tvCheckListEvent, Gravity.CENTER, 0, 0);
+
+        // Referencias a los elementos del popup
+        EditText editTextChecklistItem = popupView.findViewById(R.id.editTextChecklistItem);
+        Button btnDone = popupView.findViewById(R.id.buttonSaveChecklist);
+
+        // Referencia al contenedor en activity_add_event.xml
+        LinearLayout checkListContainer = findViewById(R.id.checkListContainer);
+
+        // Scroll bar
+        ScrollView scrollView = findViewById(R.id.scrollViewEvents);
+        scrollView.setVerticalScrollBarEnabled(false); // Oculta la barra vertical
+        scrollView.setHorizontalScrollBarEnabled(false); // Oculta la barra horizontal
+
+
+        // Configurar el botón para agregar una nueva tarea al contenedor
+        btnDone.setOnClickListener(v -> {
+            String newTask = editTextChecklistItem.getText().toString().trim();
+
+            if (!newTask.isEmpty()) {
+                // Crear un nuevo TextView para mostrar la tarea
+                TextView newTaskTextView = new TextView(this);
+                newTaskTextView.setText(newTask);
+                newTaskTextView.setTextSize(16);
+                newTaskTextView.setPadding(10, 10, 10, 10);
+                newTaskTextView.setTextColor(getResources().getColor(R.color.text_color, null));
+
+                // Agregar el nuevo TextView al contenedor
+                checkListContainer.addView(newTaskTextView);
+
+                // Limpiar el EditText
+                editTextChecklistItem.setText("");
+            }
+
+            // Cerrar el popup
+            popupWindow.dismiss();
+        });
+    }
+
+    private List<String> getChecklistItems() {
+        List<String> checklistItems = new ArrayList<>();
+        LinearLayout checkListContainer = findViewById(R.id.checkListContainer);
+
+        for (int i = 0; i < checkListContainer.getChildCount(); i++) {
+            View child = checkListContainer.getChildAt(i);
+            if (child instanceof TextView) {
+                String item = ((TextView) child).getText().toString();
+                checklistItems.add(item);
+            }
+        }
+
+        return checklistItems;
     }
 
     private void showTimePickerDialog() {
@@ -264,6 +337,9 @@ public class AddEventActivity extends AppCompatActivity {
         event.setStatus("pendiente");
         event.setIdUser(userId);
 
+        List<String> checklistItems = getChecklistItems();
+        event.setChecklist(checklistItems);
+
         saveEventToFirebase(event);
     }
 
@@ -290,6 +366,7 @@ public class AddEventActivity extends AppCompatActivity {
         tvTimeEvent.setText("");
         spinnerLabelEvent.setSelection(0);
         spinnerRecordatoryEvent.setSelection(0);
+        tvCheckListEvent.setText("");
     }
 
     private void navigateToMainActivity() {

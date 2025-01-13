@@ -8,164 +8,196 @@
     tools:context=".AddEventActivity"
     android:background="@color/background_color">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="20dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-            android:src="@drawable/mas" />
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/add_new_event_textView"
-            android:textAlignment="center"
-            android:textSize="24sp" />
-
-        <EditText
-            android:id="@+id/etTitleEvent"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="15dp"
-            android:ems="10"
-            android:hint="@string/title"
-            android:inputType="text"
-            android:paddingStart="10dp"
-            android:textColor="@color/text_color"/>
-
-        <EditText
-            android:id="@+id/etDescriptionEvent"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="15dp"
-            android:ems="10"
-            android:hint="@string/description"
-            android:inputType="text"
-            android:paddingStart="10dp"
-            android:textColor="@color/text_color" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/scrollViewEvents">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <Spinner
-                android:id="@+id/spinnerLabelEvent"
-                android:layout_width="303dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:textColor="@color/text_color"/>
-
-            <ImageButton
-                android:id="@+id/buttonNewLabelEvent"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:background="@drawable/rounder_corner_gradient"
-                android:src="@drawable/baseline_add"
-                android:contentDescription="@string/add_labels"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:src="@drawable/mas" />
 
             <TextView
-                android:id="@+id/tvDateEvent"
-                android:layout_width="303dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:hint="@string/seleciona_la_fecha"
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/add_new_event_textView"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <EditText
+                android:id="@+id/etTitleEvent"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="15dp"
+                android:ems="10"
+                android:hint="@string/title"
+                android:inputType="text"
                 android:paddingStart="10dp"
-                android:textSize="18sp"
                 android:textColor="@color/text_color"/>
 
-            <ImageButton
-                android:id="@+id/buttonAddDateEvent"
-                android:layout_width="60dp"
+            <EditText
+                android:id="@+id/etDescriptionEvent"
+                android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_weight="1"
-                android:background="@drawable/rounder_corner_gradient"
-                android:src="@drawable/baseline_calendar"
-                android:contentDescription="@string/seleciona_la_fecha"
-                android:textColor="@color/text_color"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tvTimeEvent"
-                android:layout_width="301dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:hint="@string/selecciona_la_hora"
+                android:layout_marginTop="15dp"
+                android:ems="10"
+                android:hint="@string/description"
+                android:inputType="text"
                 android:paddingStart="10dp"
-                android:textSize="18sp" />
-
-            <ImageButton
-                android:id="@+id/buttonAddTimeEvent"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:background="@drawable/rounder_corner_gradient"
-                android:src="@drawable/baseline_time"
-                android:contentDescription="@string/selecciona_la_hora"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal">
-
-            <Spinner
-                android:id="@+id/spinnerRecordatoryEvent"
-                android:layout_width="303dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:textColor="@color/text_color" />
 
-            <ImageButton
-                android:id="@+id/buttonRecordatoryEvent"
-                android:layout_width="60dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_weight="1"
-                android:background="@drawable/rounder_corner_gradient"
-                android:contentDescription="@string/recordatorio"
-                android:src="@drawable/baseline_notificacion" />
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal">
 
+                <Spinner
+                    android:id="@+id/spinnerLabelEvent"
+                    android:layout_width="303dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textColor="@color/text_color"/>
+
+                <ImageButton
+                    android:id="@+id/buttonNewLabelEvent"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounder_corner_gradient"
+                    android:src="@drawable/baseline_add"
+                    android:contentDescription="@string/add_labels"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvCheckListEvent"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:text="Checklist"
+                    android:textColor="@color/text_color"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                android:id="@+id/checkListContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvDateEvent"
+                    android:layout_width="303dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:hint="@string/seleciona_la_fecha"
+                    android:paddingStart="10dp"
+                    android:textSize="18sp"
+                    android:textColor="@color/text_color"/>
+
+                <ImageButton
+                    android:id="@+id/buttonAddDateEvent"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounder_corner_gradient"
+                    android:src="@drawable/baseline_calendar"
+                    android:contentDescription="@string/seleciona_la_fecha"
+                    android:textColor="@color/text_color"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvTimeEvent"
+                    android:layout_width="301dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:hint="@string/selecciona_la_hora"
+                    android:paddingStart="10dp"
+                    android:textSize="18sp" />
+
+                <ImageButton
+                    android:id="@+id/buttonAddTimeEvent"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounder_corner_gradient"
+                    android:src="@drawable/baseline_time"
+                    android:contentDescription="@string/selecciona_la_hora"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/spinnerRecordatoryEvent"
+                    android:layout_width="303dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textColor="@color/text_color" />
+
+                <ImageButton
+                    android:id="@+id/buttonRecordatoryEvent"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounder_corner_gradient"
+                    android:contentDescription="@string/recordatorio"
+                    android:src="@drawable/baseline_notificacion" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/buttonSaveEvent"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="15dp"
+                android:text="@string/add_events"
+                android:textColor="@color/white"/>
         </LinearLayout>
-
-        <Button
-            android:id="@+id/buttonSaveEvent"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="15dp"
-            android:text="@string/add_events"
-            android:textColor="@color/white"/>
-    </LinearLayout>
-
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

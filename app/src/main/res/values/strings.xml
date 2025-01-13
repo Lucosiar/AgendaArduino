@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Asistente</string>
+    <string name="app_name">Notely</string>
     <!-- Selecion -->
     <string name="selecciona_la_hora">Selecciona la hora</string>
     <string name="seleciona_la_fecha">Seleciona la fecha</string>
@@ -52,6 +52,8 @@
     <!-- Otros -->
     <string name="client_id">294672174107-vsk4d2pqu7bk9lgvvd9d7tg0u7p74mc5.apps.googleusercontent.com</string>
     <string name="all_routines">Todas las rutinas</string>
+    <string name="nombre_de_la_tarea">Nombre de la tarea</string>
+    <string name="agregar">Agregar</string>
 
 
 </resources>

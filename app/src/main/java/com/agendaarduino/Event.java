@@ -1,9 +1,12 @@
 package com.agendaarduino;
 
+import java.util.List;
+
 public class Event extends Action{
     private String idEvent;
     private String date;
-    private String idUser;
+
+
 
     // Constructores
     public Event() {
@@ -12,7 +15,6 @@ public class Event extends Action{
 
     public Event(String date, String idUser, String idEvent) {
         this.date = date;
-        this.idUser = idUser;
         this.idEvent = idEvent;
     }
 
@@ -23,9 +25,6 @@ public class Event extends Action{
     public String getDate() {
         return date;
     }
-    public String getIdUser() {
-        return idUser;
-    }
 
     // Setters
     public void setIdEvent(String idEvent) {
@@ -34,8 +33,6 @@ public class Event extends Action{
     public void setDate(String date) {
         this.date = date;
     }
-    public void setIdUser(String idUser) {
-        this.idUser = idUser;
-    }
+
 }
 

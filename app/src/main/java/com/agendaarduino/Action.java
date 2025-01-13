@@ -1,5 +1,9 @@
 package com.agendaarduino;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 public class Action {
     private String title;
     private String description;
@@ -7,19 +11,26 @@ public class Action {
     private String label;
     private String status;
     private String recordatory;
+    private String dateUpdated;
+
+    private List<String> checkList;
+
+    private String idUser;
     // Constructores
     public Action(){
 
     }
 
     public Action(String title, String description, String time, String label,
-                  String status, String recordatory) {
+                  String status, String recordatory, String idUser, List<String> checkList) {
         this.title = title;
         this.description = description;
         this.time = time;
         this.label = label;
         this.status = status;
         this.recordatory = recordatory;
+        this.idUser = idUser;
+        this.checkList = checkList;
     }
 
     // Getters y setters
@@ -71,4 +82,33 @@ public class Action {
         this.recordatory = recordatory;
     }
 
+    public String getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(String idUser) {
+        this.idUser = idUser;
+    }
+
+    public String getDateUpdated() {return dateUpdated;}
+    public void setDateUpdated(String dateUpdated) {this.dateUpdated = dateUpdated;}
+
+    public List<String> getChecklist() {
+        return checkList;
+    }
+
+    public void setChecklist(List<String> checklist) {
+        this.checkList = checklist;
+    }
+    public void updateStatusForToday() {
+        LocalDate today = LocalDate.now();
+        String todayDate = today.format(DateTimeFormatter.ISO_LOCAL_DATE);
+
+        if (!todayDate.equals(dateUpdated)) {
+            if (this instanceof Routine && "completado".equals(status)) {
+                status = "pendiente";
+            }
+            dateUpdated = todayDate;
+        }
+    }
 }
