@@ -32,6 +32,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
@@ -290,11 +291,7 @@ public class AddRoutinesActivity extends AppCompatActivity {
         routine.setTime(routineTime);
         routine.setLabel(routineLabel);
         routine.setRecordatory(routineRecordatory);
-        //routine.setStatusDay("pendiente");
         routine.setIdUser(userId);
-
-        List<String> checklistItems = getChecklistItems();
-        routine.setChecklist(checklistItems);
 
         saveRoutineToFirebase(routine);
     }
@@ -307,6 +304,7 @@ public class AddRoutinesActivity extends AppCompatActivity {
         documentReference.set(routine).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(AddRoutinesActivity.this, "Rutina guardada exitosamente", Toast.LENGTH_SHORT).show();
+                saveChecklistItems(routineId);
                 clearForm();
                 navigateToMainActivity();
             } else {
@@ -314,6 +312,30 @@ public class AddRoutinesActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void saveChecklistItems(String routineId) {
+        List<String> checklistItems = getChecklistItems();
+        CollectionReference checklistRef = Utility.getCollectionReferenceForChecklist();
+
+        for (String item : checklistItems) {
+            String checklistId = checklistRef.document().getId();
+
+            ChecklistItem checklistItem = new ChecklistItem(
+                    routineId,
+                    item,
+                    "pendiente"
+            );
+
+            checklistRef.document(checklistId).set(checklistItem).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d("Firestore", "Ítem del checklist guardado: " + item);
+                } else {
+                    Log.e("Firestore", "Error al guardar el ítem del checklist: " + item, task.getException());
+                }
+            });
+        }
+    }
+
 
     private void clearForm() {
         etTitleRoutine.setText("");

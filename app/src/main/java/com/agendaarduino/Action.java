@@ -13,7 +13,7 @@ public class Action {
     private String recordatory;
     private String dateUpdated;
 
-    private List<String> checkList;
+    private List<ChecklistItem> checkList;
 
     private String idUser;
     // Constructores
@@ -22,7 +22,7 @@ public class Action {
     }
 
     public Action(String title, String description, String time, String label,
-                  String status, String recordatory, String idUser, List<String> checkList) {
+                  String status, String recordatory, String idUser, List<ChecklistItem> checkList) {
         this.title = title;
         this.description = description;
         this.time = time;
@@ -93,11 +93,11 @@ public class Action {
     public String getDateUpdated() {return dateUpdated;}
     public void setDateUpdated(String dateUpdated) {this.dateUpdated = dateUpdated;}
 
-    public List<String> getChecklist() {
+    public List<ChecklistItem> getChecklist() {
         return checkList;
     }
 
-    public void setChecklist(List<String> checklist) {
+    public void setChecklist(List<ChecklistItem> checklist) {
         this.checkList = checklist;
     }
     public void updateStatusForToday() {

@@ -32,11 +32,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -337,9 +339,6 @@ public class AddEventActivity extends AppCompatActivity {
         event.setStatus("pendiente");
         event.setIdUser(userId);
 
-        List<String> checklistItems = getChecklistItems();
-        event.setChecklist(checklistItems);
-
         saveEventToFirebase(event);
     }
 
@@ -351,12 +350,40 @@ public class AddEventActivity extends AppCompatActivity {
         documentReference.set(event).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(AddEventActivity.this, "Evento guardado exitosamente", Toast.LENGTH_SHORT).show();
+                saveChecklistItems(eventId);
                 clearForm();
                 navigateToMainActivity();
             } else {
                 Toast.makeText(AddEventActivity.this, "Error al guardar el evento", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void saveChecklistItems(String eventId){
+        List<String> checklistItems = getChecklistItems();
+        CollectionReference checklistRef = Utility.getCollectionReferenceForChecklist();
+
+        if(checklistItems.isEmpty() || checklistItems==null){
+            return;
+        }
+
+        for (String item : checklistItems) {
+            String checklistId = checklistRef.document().getId();
+
+            ChecklistItem checklistItem = new ChecklistItem(
+                    eventId,
+                    item,
+                    "pendiente"
+            );
+
+            checklistRef.document(checklistId).set(checklistItem).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d("Firestore", "Ítem del checklist guardado: " + item);
+                } else {
+                    Log.e("Firestore", "Error al guardar el ítem del checklist: " + item, task.getException());
+                }
+            });
+        }
     }
 
     private void clearForm() {

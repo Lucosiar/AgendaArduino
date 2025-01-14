@@ -6,11 +6,7 @@ public class Event extends Action{
     private String idEvent;
     private String date;
 
-
-
-    // Constructores
     public Event() {
-        // Constructor vacío para Firebase
     }
 
     public Event(String date, String idUser, String idEvent) {

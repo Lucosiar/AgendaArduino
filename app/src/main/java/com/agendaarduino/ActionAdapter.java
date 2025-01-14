@@ -12,7 +12,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -126,6 +130,14 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                 holder.tvDate.setText(event.getDate());
                 holder.tvDate.setVisibility(View.VISIBLE);
             }
+
+            getChecklistItemsFromDatabase(event.getIdEvent(), checklistItems -> {
+                Log.d("PRUEBALOG", "Checklist Items cargados: " + checklistItems.size());
+                ChecklistItemAdapter checklistItemAdapter = new ChecklistItemAdapter(checklistItems);
+                holder.recyclerViewList.setLayoutManager(new LinearLayoutManager(context));
+                holder.recyclerViewList.setAdapter(checklistItemAdapter);
+            });
+
         } else {
             Log.d("PRUEBALOG", "Esta acción no es un evento: " + action.getClass().getSimpleName());
             holder.tvDate.setVisibility(View.GONE);
@@ -163,8 +175,32 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                 }
             }
         });
+    }
 
+    private void getChecklistItemsFromDatabase(String actionId, ChecklistCallback callback) {
+        List<ChecklistItem> checklistItems = new ArrayList<>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        Log.d("PRUEBALOG", "Consultando checklists para actionId: " + actionId);
+
+        db.collection("checklist")
+                .whereEqualTo("actionId", actionId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    Log.d("PRUEBALOG", "Documentos obtenidos: " + queryDocumentSnapshots.size());
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            ChecklistItem item = document.toObject(ChecklistItem.class);
+                            checklistItems.add(item);
+                            Log.d("PRUEBALOG", "Item cargado: " + item.getTitle());
+                        }
+                    }
+                    callback.onChecklistLoaded(checklistItems);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("PRUEBALOG", "Error obteniendo los checklist items", e);
+                    callback.onChecklistLoaded(new ArrayList<>());
+                });
     }
 
     @Override
@@ -218,6 +254,8 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         private CheckBox cbCircle;
         private LinearLayout actionLayout;
 
+        private RecyclerView recyclerViewList;
+
         public ActionViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
@@ -227,6 +265,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             cbCircle = itemView.findViewById(R.id.cbCircle);
             actionLayout = itemView.findViewById(R.id.actionLayout);
             tvDate = itemView.findViewById(R.id.tvDate);
+            recyclerViewList = itemView.findViewById(R.id.recyclerCheckList);
 
         }
     }

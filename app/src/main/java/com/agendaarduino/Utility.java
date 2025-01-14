@@ -22,4 +22,8 @@ public class Utility {
         return FirebaseFirestore.getInstance().collection("labels");
     }
 
+    public static CollectionReference getCollectionReferenceForChecklist() {
+        return FirebaseFirestore.getInstance().collection("checklist");
+    }
+
 }
