@@ -1,11 +1,15 @@
 package com.agendaarduino;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -38,6 +42,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import org.w3c.dom.Text;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -284,12 +292,15 @@ public class AddRoutinesActivity extends AppCompatActivity {
 
         String userId = currentUser.getUid();
 
+        String hourCalculate = calculateHour(routineTime, routineRecordatory);
+
         Routine routine = new Routine();
         routine.setTitle(routineTitle);
         routine.setDescription(routineDescription);
         routine.setDaysOfWeek(routineDay);
         routine.setTime(routineTime);
         routine.setLabel(routineLabel);
+        routine.setHourCalculate(hourCalculate);
         routine.setRecordatory(routineRecordatory);
         routine.setIdUser(userId);
 
@@ -305,6 +316,7 @@ public class AddRoutinesActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 Toast.makeText(AddRoutinesActivity.this, "Rutina guardada exitosamente", Toast.LENGTH_SHORT).show();
                 saveChecklistItems(routineId);
+                scheduleRoutineNotification(routine);
                 clearForm();
                 navigateToMainActivity();
             } else {
@@ -336,6 +348,38 @@ public class AddRoutinesActivity extends AppCompatActivity {
         }
     }
 
+    private void scheduleRoutineNotification(Routine routine) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        if (alarmManager != null) {
+            // Verificar si la API es >= 31 (Android 12) antes de llamar a canScheduleExactAlarms()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+                Log.w("AlarmError", "No se tienen permisos para programar alarmas exactas.");
+                return; // No continuar si no se pueden programar alarmas exactas
+            }
+
+            Intent intent = new Intent(this, MyNotificationReceiver.class);
+            intent.putExtra("title", routine.getTitle());
+            intent.putExtra("body", routine.getDescription());
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, routine.getIdRoutine().hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            if (!routine.getHourCalculate().equals("0")) {
+                String dateTimeString = routine.getDaysOfWeek() + " " + routine.getHourCalculate();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+                LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, formatter);
+                long triggerTime = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+                try {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+                    Log.d("AlarmSet", "Alarma programada para: " + dateTimeString);
+                } catch (SecurityException e) {
+                    Log.e("AlarmError", "No se pudo programar la alarma exacta", e);
+                }
+            }
+        } else {
+            Log.w("AlarmError", "AlarmManager es null.");
+        }
+    }
 
     private void clearForm() {
         etTitleRoutine.setText("");
@@ -390,6 +434,38 @@ public class AddRoutinesActivity extends AppCompatActivity {
         return newLabel.substring(0, 1).toUpperCase() + newLabel.substring(1).toLowerCase();
     }
 
+    private String calculateHour(String time, String recordatory) {
+        try {
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+            // Si el recordatorio es una hora específica, validamos su formato y lo usamos directamente
+            if (recordatory.matches("\\d{2}:\\d{2}")) {
+                LocalTime recordatoryTime = LocalTime.parse(recordatory, timeFormatter);
+                return recordatoryTime.format(timeFormatter);
+            }
+
+            LocalTime routineTime = LocalTime.parse(time, timeFormatter);
+            int minutesToSubtract = 0;
+
+            if (recordatory.equals("15 minutos")) {
+                minutesToSubtract = 15;
+            } else if (recordatory.equals("30 minutos")) {
+                minutesToSubtract = 30;
+            } else if (recordatory.equals("1 hora")) {
+                minutesToSubtract = 60;
+            } else if (recordatory.equalsIgnoreCase("Sin recordatorio")) {
+                return "0";
+            }
+
+            LocalTime calculatedTime = routineTime.minusMinutes(minutesToSubtract);
+            return calculatedTime.format(timeFormatter);
+
+        } catch (Exception e) {
+            Log.e("AddEventActivity", "Error al calcular la hora del recordatorio", e);
+            return time;
+        }
+    }
+
     private void saveLabelToFirebase(String label) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
@@ -413,6 +489,8 @@ public class AddRoutinesActivity extends AppCompatActivity {
         }).addOnFailureListener(e ->
                 Toast.makeText(this, "Error al guardar la etiqueta", Toast.LENGTH_SHORT).show());
     }
+
+
 
     private void inicialice(){
         spinnerLabelRoutine = findViewById(R.id.spinnerLabelRoutine);

@@ -1,9 +1,13 @@
 package com.agendaarduino;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,24 +25,20 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class AddEventActivity extends AppCompatActivity {
         initialize();
 
         // Configuración de spinner para las opciones de recordatorio
-        String[] recordatoryOptions = {"Sin recordatorio", "15 minutos", "30 minutos", "1 hora"};
+        String[] recordatoryOptions = {"Sin recordatorio", "15 minutos", "30 minutos", "1 hora", "Personalizado"};
         ArrayAdapter<String> recordatoryAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
@@ -76,6 +76,7 @@ public class AddEventActivity extends AppCompatActivity {
         labelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerLabelEvent.setAdapter(labelAdapter);
 
+        // Spiner label event
         spinnerLabelEvent.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -85,6 +86,23 @@ public class AddEventActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 Log.d("Spinner", "Nada seleccionado en el Spinner");
+            }
+        });
+
+        // Spinner recordatory event
+        spinnerRecordatoryEvent.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedOption = (String) parent.getItemAtPosition(position);
+
+                if ("Personalizado".equals(selectedOption)) {
+                    showTimePickerDialogRecordatory();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // No hacer nada si no se selecciona nada
             }
         });
 
@@ -99,12 +117,12 @@ public class AddEventActivity extends AppCompatActivity {
 
         // Boton para mostrar los selectores para la fecha y hora
         buttonAddDateEvent.setOnClickListener((view -> showDatePickerDialog()));
-        buttonAddTimeEvent.setOnClickListener((view -> showTimePickerDialog()));
-        buttonRecordatoryEvent.setOnClickListener((view -> showTimePickerDialog()));
+        buttonAddTimeEvent.setOnClickListener((view -> showTimePickerDialogTime()));
+        buttonRecordatoryEvent.setOnClickListener((view -> showTimePickerDialogRecordatory()));
 
         // Textview que muestra también los selectores para la fecha y hora
         tvDateEvent.setOnClickListener((view -> showDatePickerDialog()));
-        tvTimeEvent.setOnClickListener((view -> showTimePickerDialog()));
+        tvTimeEvent.setOnClickListener((view -> showTimePickerDialogTime()));
 
         tvCheckListEvent.setOnClickListener((view -> popUpCheckList()));
 
@@ -198,12 +216,26 @@ public class AddEventActivity extends AppCompatActivity {
         return checklistItems;
     }
 
-    private void showTimePickerDialog() {
+    private void showTimePickerDialogTime() {
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
             selectedHour = hourOfDay;
             selectedMinute = minute;
             tvTimeEvent.setText(String.format("%02d:%02d", hourOfDay, minute));
         }, selectedHour, selectedMinute, true);
+        timePickerDialog.show();
+    }
+
+    private void showTimePickerDialogRecordatory() {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+            selectedHour = hourOfDay;
+            selectedMinute = minute;
+
+            String customTime = String.format("%02d:%02d", hourOfDay, minute);
+            ((ArrayAdapter<String>) spinnerRecordatoryEvent.getAdapter())
+                    .insert(customTime, spinnerRecordatoryEvent.getCount() - 1);
+            spinnerRecordatoryEvent.setSelection(spinnerRecordatoryEvent.getCount() - 2);
+        }, selectedHour, selectedMinute, true);
+
         timePickerDialog.show();
     }
 
@@ -329,6 +361,8 @@ public class AddEventActivity extends AppCompatActivity {
 
         String userId = currentUser.getUid();
 
+        String hourCalculate = calculateHour(eventTime, eventRecordatory);
+
         Event event = new Event();
         event.setTitle(eventTitle);
         event.setDescription(eventDescription);
@@ -336,6 +370,7 @@ public class AddEventActivity extends AppCompatActivity {
         event.setTime(eventTime);
         event.setLabel(eventLabel);
         event.setRecordatory(eventRecordatory);
+        event.setHourCalculate(hourCalculate);
         event.setStatus("pendiente");
         event.setIdUser(userId);
 
@@ -351,6 +386,7 @@ public class AddEventActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 Toast.makeText(AddEventActivity.this, "Evento guardado exitosamente", Toast.LENGTH_SHORT).show();
                 saveChecklistItems(eventId);
+                scheduleEventNotification(event);
                 clearForm();
                 navigateToMainActivity();
             } else {
@@ -358,6 +394,47 @@ public class AddEventActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void scheduleEventNotification(Event event) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        if (alarmManager != null) {
+            // Verificar si la API es >= 31 (Android 12) antes de llamar a canScheduleExactAlarms()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+                Log.w("AlarmError", "No se tienen permisos para programar alarmas exactas.");
+                return; // No continuar si no se pueden programar alarmas exactas
+            }
+
+            Intent intent = new Intent(this, MyNotificationReceiver.class);
+            intent.putExtra("title", event.getTitle());
+            intent.putExtra("body", event.getDescription());
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, event.getIdEvent().hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            if (!event.getHourCalculate().equals("0")) {
+                String dateTimeString = event.getDate() + " " + event.getHourCalculate();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+                LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, formatter);
+                long triggerTime = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+                Log.d("AlarmError NotificationDebug", "Programando notificación: " + event.getTitle());
+                Log.d("AlarmError NotificationDebug", "Fecha y hora del evento: " + dateTimeString);
+                Log.d("AlarmError NotificationDebug", "Tiempo en milisegundos: " + triggerTime);
+                Log.d("AlarmError NotificationDebug", "Hora actual en milisegundos: " + System.currentTimeMillis());
+
+                try {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+                    Log.d("AlarmError", "Alarma programada para: " + dateTimeString);
+                } catch (SecurityException e) {
+                    Log.e("AlarmError", "No se pudo programar la alarma exacta", e);
+                }
+            } else{
+                Log.e("AlarmError", "La hora calculada es 0, no se programo ninguna alarma");
+            }
+        } else {
+            Log.w("AlarmError", "AlarmManager es null.");
+        }
+    }
+
 
     private void saveChecklistItems(String eventId){
         List<String> checklistItems = getChecklistItems();
@@ -383,6 +460,38 @@ public class AddEventActivity extends AppCompatActivity {
                     Log.e("Firestore", "Error al guardar el ítem del checklist: " + item, task.getException());
                 }
             });
+        }
+    }
+
+    private String calculateHour(String time, String recordatory) {
+        try {
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+            // Si el recordatorio es una hora específica, validamos su formato y lo usamos directamente
+            if (recordatory.matches("\\d{2}:\\d{2}")) {
+                LocalTime recordatoryTime = LocalTime.parse(recordatory, timeFormatter);
+                return recordatoryTime.format(timeFormatter);
+            }
+
+            LocalTime eventTime = LocalTime.parse(time, timeFormatter);
+            int minutesToSubtract = 0;
+
+            if (recordatory.equals("15 minutos")) {
+                minutesToSubtract = 15;
+            } else if (recordatory.equals("30 minutos")) {
+                minutesToSubtract = 30;
+            } else if (recordatory.equals("1 hora")) {
+                minutesToSubtract = 60;
+            } else if (recordatory.equalsIgnoreCase("Sin recordatorio")) {
+                return "0";
+            }
+
+            LocalTime calculatedTime = eventTime.minusMinutes(minutesToSubtract);
+            return calculatedTime.format(timeFormatter);
+
+        } catch (Exception e) {
+            Log.e("AddEventActivity", "Error al calcular la hora del recordatorio", e);
+            return time;
         }
     }
 

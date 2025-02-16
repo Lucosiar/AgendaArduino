@@ -1,6 +1,9 @@
 package com.agendaarduino;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,14 +21,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,7 +55,6 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         sortEventsAndRoutinesByDateAndTime();
     }
 
-    // ordenar por fecha y hora
     // Método para ordenar acciones por fecha y hora
     private void sortEventsAndRoutinesByDateAndTime() {
         if (actionsList == null) return;
@@ -65,7 +73,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                         .withHour(Integer.parseInt(routine1.getTime().split(":")[0]))
                         .withMinute(Integer.parseInt(routine1.getTime().split(":")[1]));
             } else {
-                return 0; // Si no es ni Event ni Routine
+                return 0;
             }
 
             if (action2 instanceof Event) {
@@ -102,7 +110,6 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         holder.tvTime.setText(action.getTime());
         holder.tvLabel.setText(action.getLabel());
 
-        // Si la etiqueta / descripción está vacía, no se muestra
         holder.tvLabel.setVisibility(action.getLabel() == null || action.getLabel().isEmpty() ? View.INVISIBLE : View.VISIBLE);
         holder.tvDescription.setVisibility("Sin descripción".equals(action.getDescription()) ? View.GONE : View.VISIBLE);
 
@@ -117,10 +124,8 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             LocalDate fechaEvento = LocalDate.parse(event.getDate(), formatter);
 
             if (fechaEvento.isBefore(fechaActual)) {
-                Log.d("PRUEBALOG", "El evento está atrasado: " + event.getTitle());
                 holder.actionLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.background_recycler_delayed));
             } else {
-                Log.d("PRUEBALOG", "El evento es de hoy o futuro: " + event.getTitle());
                 holder.actionLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.backgroud_recycler));
             }
 
@@ -130,110 +135,52 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                 holder.tvDate.setText(event.getDate());
                 holder.tvDate.setVisibility(View.VISIBLE);
             }
+        } else if (action instanceof Routine) {
+            Routine routine = (Routine) action;
 
-            getChecklistItemsFromDatabase(event.getIdEvent(), checklistItems -> {
-                Log.d("PRUEBALOG", "Checklist Items cargados: " + checklistItems.size());
-                ChecklistItemAdapter checklistItemAdapter = new ChecklistItemAdapter(checklistItems);
-                holder.recyclerViewList.setLayoutManager(new LinearLayoutManager(context));
-                holder.recyclerViewList.setAdapter(checklistItemAdapter);
-            });
+            // Verificar si la rutina corresponde al día actual
+            DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("EEEE", new Locale("es", "ES"));
+            String todayDayOfWeek = fechaActual.format(dayFormatter).toLowerCase();
 
-        } else {
-            Log.d("PRUEBALOG", "Esta acción no es un evento: " + action.getClass().getSimpleName());
-            holder.tvDate.setVisibility(View.GONE);
         }
-
 
         holder.cbCircle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             String newStatus = isChecked ? "completado" : "pendiente";
 
-            // Actualización para eventos
+            // Actualizar el estado en la base de datos
             if (action instanceof Event) {
-                Event event = (Event) action;
-                if (event.getIdEvent() != null) {
-                    Utility.getCollectionReferenceForEvents()
-                            .document(event.getIdEvent())
-                            .update("status", newStatus)
-                            .addOnSuccessListener(aVoid ->
-                                    Toast.makeText(context, "Estado actualizado", Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e ->
-                                    Toast.makeText(context, "Error al actualizar", Toast.LENGTH_SHORT).show());
-                }
-            }
-
-            // Actualización para rutinas
-            if (action instanceof Routine) {
-                Routine routine = (Routine) action;
-                if (routine.getIdRoutine() != null) {
-                    Utility.getCollectionReferenceForRoutines()
-                            .document(routine.getIdRoutine())
-                            .update("status", newStatus)
-                            .addOnSuccessListener(aVoid ->
-                                    Toast.makeText(context, "Estado actualizado", Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e ->
-                                    Toast.makeText(context, "Error al actualizar", Toast.LENGTH_SHORT).show());
-                }
+                updateEventStatus((Event) action, newStatus);
+            } else if (action instanceof Routine) {
+                updateRoutineStatus((Routine) action, newStatus);
             }
         });
     }
 
-    private void getChecklistItemsFromDatabase(String actionId, ChecklistCallback callback) {
-        List<ChecklistItem> checklistItems = new ArrayList<>();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    // Actualizar estado para eventos
+    private void updateEventStatus(Event event, String newStatus) {
+        if (event.getIdEvent() != null) {
+            Utility.getCollectionReferenceForEvents()
+                    .document(event.getIdEvent())
+                    .update("status", newStatus)
+                    .addOnSuccessListener(aVoid -> Toast.makeText(context, "Estado actualizado", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Toast.makeText(context, "Error al actualizar", Toast.LENGTH_SHORT).show());
+        }
+    }
 
-        Log.d("PRUEBALOG", "Consultando checklists para actionId: " + actionId);
-
-        db.collection("checklist")
-                .whereEqualTo("actionId", actionId)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    Log.d("PRUEBALOG", "Documentos obtenidos: " + queryDocumentSnapshots.size());
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            ChecklistItem item = document.toObject(ChecklistItem.class);
-                            checklistItems.add(item);
-                            Log.d("PRUEBALOG", "Item cargado: " + item.getTitle());
-                        }
-                    }
-                    callback.onChecklistLoaded(checklistItems);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("PRUEBALOG", "Error obteniendo los checklist items", e);
-                    callback.onChecklistLoaded(new ArrayList<>());
-                });
+    // Actualizar estado para rutinas
+    private void updateRoutineStatus(Routine routine, String newStatus) {
+        if (routine.getIdRoutine() != null) {
+            Utility.getCollectionReferenceForRoutines()
+                    .document(routine.getIdRoutine())
+                    .update("status", newStatus)
+                    .addOnSuccessListener(aVoid -> Toast.makeText(context, "Estado actualizado", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Toast.makeText(context, "Error al actualizar", Toast.LENGTH_SHORT).show());
+        }
     }
 
     @Override
     public int getItemCount() {
         return actionsList.size();
-    }
-
-    // Método para actualizar eventos
-    private void updateEventStatus(Event event, boolean isChecked) {
-        String newStatus = isChecked ? "completado" : "pendiente";
-        if (event.getIdEvent() != null) {
-            Utility.getCollectionReferenceForEvents()
-                    .document(event.getIdEvent())
-                    .update("status", newStatus)
-                    .addOnSuccessListener(aVoid ->
-                            Toast.makeText(context, "Estado del evento actualizado", Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e ->
-                            Toast.makeText(context, "Error al actualizar el estado del evento", Toast.LENGTH_SHORT).show());
-        }
-    }
-
-    // Método para actualizar rutinas
-    private void updateRoutineStatus(Routine routine, boolean isChecked) {
-        String newStatus = isChecked ? "completado" : "pendiente";
-        if (routine.getIdRoutine() != null) {
-            Utility.getCollectionReferenceForRoutines()
-                    .document(routine.getIdRoutine())
-                    .update("status", newStatus)
-                    .addOnSuccessListener(aVoid ->
-                            Toast.makeText(context, "Estado de la rutina actualizado", Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e ->
-                            Toast.makeText(context, "Error al actualizar el estado de la rutina", Toast.LENGTH_SHORT).show());
-        }
     }
 
     public void setActionList(List<Action> newActionList) {

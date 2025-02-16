@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Action {
+    private String id;
     private String title;
     private String description;
     private String time;
@@ -13,6 +14,7 @@ public class Action {
     private String recordatory;
     private String dateUpdated;
 
+    private String hourCalculate;
     private List<ChecklistItem> checkList;
 
     private String idUser;
@@ -111,4 +113,13 @@ public class Action {
             dateUpdated = todayDate;
         }
     }
+
+    public String getHourCalculate() {
+        return hourCalculate;
+    }
+
+    public void setHourCalculate(String hourCalculate) {
+        this.hourCalculate = hourCalculate;
+    }
+
 }

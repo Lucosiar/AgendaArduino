@@ -2,6 +2,7 @@
 agp = "8.4.0"
 firebaseBom = "33.6.0"
 firebaseUiFirestore = "8.0.1"
+firebaseDatabase = "20.2.2"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -15,8 +16,11 @@ firebaseAuth = "23.1.0"
 playServicesAuth = "21.2.0"
 playServicesAuthVersion = "20.3.0"
 playServicesLocation = "21.3.0"
+firebaseMessaging = "24.1.0"
+firebaseDatabaseVersion = "21.0.0"
 
 [libraries]
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-ui-firestore = { module = "com.firebase:firebase-ui-firestore", version.ref = "firebaseUiFirestore" }
 google-firebase-auth = { module = "com.google.firebase:firebase-auth" }
@@ -32,6 +36,8 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 play-services-auth-v2030 = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuthVersion" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+google-firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabaseVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

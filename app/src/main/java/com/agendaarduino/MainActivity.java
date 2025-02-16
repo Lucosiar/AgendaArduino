@@ -1,7 +1,13 @@
 package com.agendaarduino;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -9,10 +15,14 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 
@@ -31,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ActionAdapter actionAdapter;
     private ImageView buttonSettings;
+    private static final int REQUEST_CODE_VIBRATE = 1;
 
 
     @Override
@@ -38,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        checkExactAlarmPermission();
         inicialice();
+        inicialiceFirebase();
 
         // Obtener la fecha actual
         LocalDate fechaActual = LocalDate.now();
@@ -62,6 +75,31 @@ public class MainActivity extends AppCompatActivity {
         setUpRecyclerView();
 
         loadUserAction();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_VIBRATE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permiso concedido
+            } else {
+                // Permiso denegado
+                Toast.makeText(this, "Permiso VIBRATE denegado", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void checkExactAlarmPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // Android 12+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (alarmManager != null && !alarmManager.canScheduleExactAlarms()) {
+                Log.w("AlarmError", "Solicitando permiso para alarmas exactas...");
+                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                startActivity(intent);
+            }
+        }
     }
 
     // Botón nuevo evento / rutina
@@ -231,10 +269,30 @@ public class MainActivity extends AppCompatActivity {
         // Si es evento va a cambiar evento y si es rutina, cambia la rutina.
     }
 
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Channel Name";
+            String description = "Channel Description";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("channel_id", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void inicialiceFirebase(){
+        FirebaseApp.initializeApp(this);
+        createNotificationChannel();
+    }
+
     private void inicialice(){
         buttonNewAction = findViewById(R.id.buttonNewAction);
         tvDiaActual = findViewById(R.id.tvDiaActual);
         recyclerView = findViewById(R.id.recyclerView);
         buttonSettings = findViewById(R.id.buttonSettings);
+
     }
 }
