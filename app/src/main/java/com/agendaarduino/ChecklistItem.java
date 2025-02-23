@@ -1,6 +1,7 @@
 package com.agendaarduino;
 
 public class ChecklistItem {
+    private String idChecklist;
     private String actionId;
     private String title;
     private String status;
@@ -12,6 +13,14 @@ public class ChecklistItem {
         this.actionId = actionId;
         this.title = title;
         this.status = status;
+    }
+
+    public String getChecklistId(){
+        return idChecklist;
+    }
+
+    public String setIdChecklist(String idChecklist){
+        return this.idChecklist = idChecklist;
     }
 
     public String getActionId() {

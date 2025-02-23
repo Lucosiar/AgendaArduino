@@ -62,7 +62,7 @@ public class AddEventActivity extends AppCompatActivity {
         initialize();
 
         // Configuración de spinner para las opciones de recordatorio
-        String[] recordatoryOptions = {"Sin recordatorio", "15 minutos", "30 minutos", "1 hora", "Personalizado"};
+        String[] recordatoryOptions = {"Sin recordatorio", "15 minutos", "30 minutos", "1 hora", "Misma hora", "Personalizado"};
         ArrayAdapter<String> recordatoryAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
@@ -173,8 +173,8 @@ public class AddEventActivity extends AppCompatActivity {
 
         // Scroll bar
         ScrollView scrollView = findViewById(R.id.scrollViewEvents);
-        scrollView.setVerticalScrollBarEnabled(false); // Oculta la barra vertical
-        scrollView.setHorizontalScrollBarEnabled(false); // Oculta la barra horizontal
+        scrollView.setVerticalScrollBarEnabled(false);
+        scrollView.setHorizontalScrollBarEnabled(false);
 
 
         // Configurar el botón para agregar una nueva tarea al contenedor
@@ -452,6 +452,7 @@ public class AddEventActivity extends AppCompatActivity {
                     item,
                     "pendiente"
             );
+            checklistItem.setIdChecklist(checklistId);
 
             checklistRef.document(checklistId).set(checklistItem).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -466,6 +467,10 @@ public class AddEventActivity extends AppCompatActivity {
     private String calculateHour(String time, String recordatory) {
         try {
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+            if(recordatory.equalsIgnoreCase("Misma hora")){
+                return time;
+            }
 
             // Si el recordatorio es una hora específica, validamos su formato y lo usamos directamente
             if (recordatory.matches("\\d{2}:\\d{2}")) {

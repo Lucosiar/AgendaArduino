@@ -54,6 +54,8 @@
     <string name="all_routines">Todas las rutinas</string>
     <string name="nombre_de_la_tarea">Nombre de la tarea</string>
     <string name="agregar">Agregar</string>
+    <string name="refrescar">Refrescar</string>
+    <string name="completar">Completar</string>
 
 
 </resources>

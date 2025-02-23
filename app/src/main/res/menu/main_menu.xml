@@ -9,6 +9,10 @@
         android:title="@string/all_routines" />
 
     <item
+        android:id="@+id/refresh"
+        android:title="@string/refrescar" />
+
+    <item
         android:id="@+id/action_settings"
         android:title="@string/ajustes" />
     <item

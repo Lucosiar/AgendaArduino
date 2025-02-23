@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -110,7 +111,9 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         holder.tvTime.setText(action.getTime());
         holder.tvLabel.setText(action.getLabel());
 
-        holder.tvLabel.setVisibility(action.getLabel() == null || action.getLabel().isEmpty() ? View.INVISIBLE : View.VISIBLE);
+        holder.tvLabel.setVisibility(action.getLabel() == null
+                || action.getLabel().isEmpty()
+                || "Sin etiqueta".equals(action.getLabel()) ? View.INVISIBLE : View.VISIBLE);
         holder.tvDescription.setVisibility("Sin descripción".equals(action.getDescription()) ? View.GONE : View.VISIBLE);
 
         holder.cbCircle.setChecked("completado".equals(action.getStatus()));
@@ -135,6 +138,9 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                 holder.tvDate.setText(event.getDate());
                 holder.tvDate.setVisibility(View.VISIBLE);
             }
+
+            fetchCheckListItems(event.getIdEvent(), holder.recyclerViewList);
+
         } else if (action instanceof Routine) {
             Routine routine = (Routine) action;
 
@@ -144,9 +150,10 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
 
         }
 
+        holder.cbCircle.setOnCheckedChangeListener(null);
+        holder.cbCircle.setChecked("completado".equals(action.getStatus()));
         holder.cbCircle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             String newStatus = isChecked ? "completado" : "pendiente";
-
             // Actualizar el estado en la base de datos
             if (action instanceof Event) {
                 updateEventStatus((Event) action, newStatus);
@@ -154,7 +161,31 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                 updateRoutineStatus((Routine) action, newStatus);
             }
         });
+
     }
+
+    // Get las notificaciones
+    private void fetchCheckListItems(String actionId, RecyclerView recyclerView) {
+        Utility.getCollectionReferenceForChecklist()
+                .whereEqualTo("actionId", actionId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<ChecklistItem> checklistItems = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                        ChecklistItem item = document.toObject(ChecklistItem.class);
+                        item.setIdChecklist(document.getId());
+                        checklistItems.add(item);
+                    }
+
+                    // Configurar RecyclerView con ChecklistItemAdapter
+                    ChecklistItemAdapter checklistAdapter = new ChecklistItemAdapter(context, checklistItems);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                    recyclerView.setAdapter(checklistAdapter);
+                })
+                .addOnFailureListener(e -> Log.e("Firestore", "Error obteniendo checklist", e));
+    }
+
+
 
     // Actualizar estado para eventos
     private void updateEventStatus(Event event, String newStatus) {
