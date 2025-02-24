@@ -408,6 +408,8 @@ public class AddEventActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MyNotificationReceiver.class);
             intent.putExtra("title", event.getTitle());
             intent.putExtra("body", event.getDescription());
+            intent.putExtra("id", event.getIdEvent());
+            intent.putExtra("type", "Event");
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this, event.getIdEvent().hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             if (!event.getHourCalculate().equals("0")) {

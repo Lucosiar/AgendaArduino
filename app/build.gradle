@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.agendaarduino'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.agendaarduino"
         minSdk 30
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 
@@ -40,6 +40,7 @@ dependencies {
     implementation libs.firebase.auth
     implementation libs.firebase.messaging
     implementation libs.google.firebase.database
+    implementation libs.core
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

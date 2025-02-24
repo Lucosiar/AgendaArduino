@@ -150,12 +150,6 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
-
-    // Refrescar pantalla
-    private void refreshScreen(){
-        loadUserAction();
-    }
-
     // Cambiar a ver todas las rutinas
     private void showAllRoutines() {
         Intent i = new Intent(MainActivity.this, AllEventsActivity.class);
@@ -289,11 +283,11 @@ public class MainActivity extends AppCompatActivity {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel("channel_id", name, importance);
             channel.setDescription(description);
-
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
     }
+
 
     private void inicialiceFirebase(){
         FirebaseApp.initializeApp(this);

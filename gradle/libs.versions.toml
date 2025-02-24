@@ -18,6 +18,7 @@ playServicesAuthVersion = "20.3.0"
 playServicesLocation = "21.3.0"
 firebaseMessaging = "24.1.0"
 firebaseDatabaseVersion = "21.0.0"
+core = "1.15.0"
 
 [libraries]
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
@@ -38,6 +39,7 @@ play-services-auth-v2030 = { module = "com.google.android.gms:play-services-auth
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 google-firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabaseVersion" }
+core = { group = "androidx.core", name = "core", version.ref = "core" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

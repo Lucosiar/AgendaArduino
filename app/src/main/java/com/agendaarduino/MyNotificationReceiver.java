@@ -16,7 +16,7 @@ public class MyNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Log.d("AlarmError NotificationDebug", "onReceive ejecutado - se recibió el Broadcast.");
+        Log.d("AlarmErrorNotificationDebug", "onReceive ejecutado - se recibió el Broadcast.");
 
         String title = intent.getStringExtra("title");
         String body = intent.getStringExtra("body");
@@ -24,14 +24,23 @@ public class MyNotificationReceiver extends BroadcastReceiver {
         String type = intent.getStringExtra("type");
 
         if (title == null || body == null || id == null || type == null) {
-            Log.e("AlarmError NotificationDebug", "Datos de la notificación incompletos.");
+            if(title==null && body == null){
+                Log.e("AlarmErrorNotificationDebug", "Datos de titulo y body.");
+            }
+            if(id==null){
+                Log.e("AlarmErrorNotificationDebug", "ID vacio.");
+            }
+            if(type==null){
+                Log.e("AlarmErrorNotificationDebug", "Type vacio");
+            }
+            Log.e("AlarmErrorNotificationDebug", "Datos de la notificación incompletos.");
             return;
         }
 
-        Log.d("AlarmError NotificationDebug", "Mostrando notificación: " + title + " - " + body);
+        Log.d("AlarmErrorNotificationDebug", "Mostrando notificación: " + title + " - " + body);
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            Log.e("AlarmError NotificationReceiver", "No se tienen permisos para mostrar notificaciones.");
+            Log.e("AlarmErrorNotificationReceiver", "No se tienen permisos para mostrar notificaciones.");
             return;
         }
 
@@ -65,6 +74,6 @@ public class MyNotificationReceiver extends BroadcastReceiver {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(1, builder.build());
 
-        Log.d("AlarmError NotificationDebug", "Notificación enviada correctamente.");
+        Log.d("AlarmErrorNotificationDebug", "Notificación enviada correctamente.");
     }
 }
