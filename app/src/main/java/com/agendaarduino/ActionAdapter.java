@@ -1,6 +1,7 @@
 package com.agendaarduino;
 
 import android.app.AlarmManager;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -147,7 +149,6 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             // Verificar si la rutina corresponde al día actual
             DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("EEEE", new Locale("es", "ES"));
             String todayDayOfWeek = fechaActual.format(dayFormatter).toLowerCase();
-
         }
 
         holder.cbCircle.setOnCheckedChangeListener(null);
@@ -161,6 +162,9 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                 updateRoutineStatus((Routine) action, newStatus);
             }
         });
+
+        // Configura el clic en los elementos
+        holder.itemView.setOnClickListener(v -> showEventInfoPopup(action));
 
     }
 
@@ -185,8 +189,6 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                 .addOnFailureListener(e -> Log.e("Firestore", "Error obteniendo checklist", e));
     }
 
-
-
     // Actualizar estado para eventos
     private void updateEventStatus(Event event, String newStatus) {
         if (event.getIdEvent() != null) {
@@ -207,6 +209,59 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
                     .addOnSuccessListener(aVoid -> Toast.makeText(context, "Estado actualizado", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e -> Toast.makeText(context, "Error al actualizar", Toast.LENGTH_SHORT).show());
         }
+    }
+
+    // Método para mostrar el popup con la información del action
+    private void showEventInfoPopup(Action action) {
+        Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.popup_action_info);
+
+        TextView tvTitle = dialog.findViewById(R.id.tvTitle);
+        TextView tvDescription = dialog.findViewById(R.id.tvDescription);
+        TextView tvDate = dialog.findViewById(R.id.tvDate);
+        TextView tvTime = dialog.findViewById(R.id.tvTime);
+        Button btnEdit = dialog.findViewById(R.id.btnEdit);
+        Button btnDelete = dialog.findViewById(R.id.btnDelete);
+        Button btnClose = dialog.findViewById(R.id.btnClose);
+
+        tvTitle.setText(action.getTitle());
+        tvDescription.setText(action.getDescription());
+
+        if (action instanceof Event) {
+            Event event = (Event) action;
+            tvDate.setText(event.getDate());
+            tvTime.setText(event.getTime());
+        } else if (action instanceof Routine) {
+            Routine routine = (Routine) action;
+            tvTime.setText(routine.getTime());
+            tvDate.setVisibility(View.GONE);
+        }
+
+        btnEdit.setOnClickListener(v -> {
+            editAction(action);
+            dialog.dismiss();
+        });
+
+        btnDelete.setOnClickListener(v -> {
+            deleteAction(action);
+            dialog.dismiss();
+        });
+
+        btnClose.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+    private void editAction(Action action) {
+        // Implementa la lógica para editar el evento o rutina
+        Toast.makeText(context, "Editar acción: " + action.getTitle(), Toast.LENGTH_SHORT).show();
+    }
+
+    private void deleteAction(Action action) {
+        // Implementa la lógica para borrar el evento o rutina
+        Toast.makeText(context, "Borrar acción: " + action.getTitle(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

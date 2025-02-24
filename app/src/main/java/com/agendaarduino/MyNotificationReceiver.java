@@ -64,15 +64,19 @@ public class MyNotificationReceiver extends BroadcastReceiver {
         // Construir la notificación con las acciones
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "channel_id")
                 .setSmallIcon(R.drawable.notes_icon)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentTitle(title);
+
+        if (body != null && !body.equals("Sin descripción")) {
+            builder.setContentText(body);
+        }
+
+        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .addAction(R.drawable.ic_complete_notificacion, "Completar", completePendingIntent)
                 .addAction(R.drawable.ic_complete_notificacion, "Posponer", snoozePendingIntent)
                 .addAction(R.drawable.ic_complete_notificacion, "Ignorar", dismissPendingIntent);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(1, builder.build());
+        notificationManager.notify(id.hashCode(), builder.build());
 
         Log.d("AlarmErrorNotificationDebug", "Notificación enviada correctamente.");
     }
