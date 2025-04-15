@@ -56,6 +56,8 @@
     <string name="agregar">Agregar</string>
     <string name="refrescar">Refrescar</string>
     <string name="completar">Completar</string>
+    <string name="anterior">Anterior</string>
+    <string name="siguiente">Siguiente</string>
 
 
 </resources>

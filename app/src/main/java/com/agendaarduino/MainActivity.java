@@ -37,7 +37,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageButton buttonNewAction;
+    private ImageButton buttonNewAction, buttonShowCaledar;
     private TextView tvDiaActual;
     private RecyclerView recyclerView;
     private ActionAdapter actionAdapter;
@@ -70,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Botón nuevo evento / rutina
         buttonNewAction.setOnClickListener(v-> openNewAction());
+
+        // Botón ver calendario
+        buttonShowCaledar.setOnClickListener(v -> openCalendar());
+
         // Botón de ajustes
         buttonSettings.setOnClickListener(v -> openSettings());
         setUpRecyclerView();
@@ -119,6 +123,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         popupMenu.show();
+    }
+
+    private void openCalendar(){
+        Intent i = new Intent(MainActivity.this, CalendarActivity.class);
+        startActivity(i);
     }
 
     // Abrir menú superior
@@ -289,7 +298,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void inicialiceFirebase(){
         FirebaseApp.initializeApp(this);
         createNotificationChannel();
@@ -300,6 +308,7 @@ public class MainActivity extends AppCompatActivity {
         tvDiaActual = findViewById(R.id.tvDiaActual);
         recyclerView = findViewById(R.id.recyclerView);
         buttonSettings = findViewById(R.id.buttonSettings);
+        buttonShowCaledar = findViewById(R.id.buttonShowCaledar);
 
     }
 }

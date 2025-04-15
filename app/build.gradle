@@ -48,4 +48,8 @@ dependencies {
     implementation libs.google.firebase.auth
     implementation(libs.play.services.location)
     implementation libs.play.services.auth.v2030
+    implementation 'com.github.kizitonwose:CalendarView:1.0.4'
+
+
+
 }

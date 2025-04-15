@@ -22,10 +22,14 @@ public class NotificationActionReceiver extends BroadcastReceiver {
             return;
         }
 
+        int notificationId = id.hashCode();
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+
         if ("COMPLETE".equals(action)) {
             // Lógica para completar la tarea
             updateStatusToCompleted(context, id, type);
-            NotificationManagerCompat.from(context).cancel(1);
+            notificationManager.cancel(notificationId);
             // Mostrar un Toast
             Toast.makeText(context, "Acción completada", Toast.LENGTH_SHORT).show();
         } else if ("SNOOZE".equals(action)) {
@@ -33,7 +37,7 @@ public class NotificationActionReceiver extends BroadcastReceiver {
             Log.d("NotificationAction", "Tarea pospuesta (no implementada)");
         } else if ("DISMISS".equals(action)) {
             // Lógica para ignorar la notificación
-            NotificationManagerCompat.from(context).cancel(1);
+            notificationManager.cancel(notificationId);
             Log.d("NotificationAction", "Notificación ignorada");
         }
     }

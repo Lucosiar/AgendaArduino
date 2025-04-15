@@ -57,4 +57,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <ImageButton
+        android:id="@+id/buttonShowCaledar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounder_corner_gradient"
+        android:contentDescription="@string/new_action"
+        android:src="@drawable/baseline_calendar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/buttonNewAction" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

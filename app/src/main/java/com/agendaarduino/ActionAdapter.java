@@ -217,15 +217,20 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         dialog.setContentView(R.layout.popup_action_info);
 
         TextView tvTitle = dialog.findViewById(R.id.tvTitle);
+        TextView tvStatus = dialog.findViewById(R.id.tvStatus);
         TextView tvDescription = dialog.findViewById(R.id.tvDescription);
         TextView tvDate = dialog.findViewById(R.id.tvDate);
         TextView tvTime = dialog.findViewById(R.id.tvTime);
+        TextView tvHourCalculate = dialog.findViewById(R.id.tvHourCalculate);
         Button btnEdit = dialog.findViewById(R.id.btnEdit);
         Button btnDelete = dialog.findViewById(R.id.btnDelete);
         Button btnClose = dialog.findViewById(R.id.btnClose);
 
         tvTitle.setText(action.getTitle());
+        tvStatus.setText(action.getStatus());
         tvDescription.setText(action.getDescription());
+        tvHourCalculate.setText(action.getHourCalculate());
+
 
         if (action instanceof Event) {
             Event event = (Event) action;
