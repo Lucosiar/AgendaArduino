@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    // Editar una acción
+    // Editar una acción // FALTA POR HACER
     private void editAction(){
         // Editar accion
         // Si es evento va a cambiar evento y si es rutina, cambia la rutina.

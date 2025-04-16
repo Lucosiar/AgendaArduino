@@ -58,6 +58,7 @@
     <string name="completar">Completar</string>
     <string name="anterior">Anterior</string>
     <string name="siguiente">Siguiente</string>
+    <string name="mes_a_o">Mes/Año</string>
 
 
 </resources>
