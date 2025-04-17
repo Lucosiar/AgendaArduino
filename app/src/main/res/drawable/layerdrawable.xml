@@ -7,15 +7,15 @@
                 android:startColor="@color/colorPrimary"
                 android:endColor="@color/colorSecundary"
                 android:angle="45" />
-            <corners android:radius="50dp" />
+            <corners android:radius="35dp" />
         </shape>
     </item>
-    <item android:left="4dp" android:right="4dp" android:top="4dp" android:bottom="4dp">
+    <item android:left="3dp" android:right="3dp" android:top="3dp" android:bottom="3dp">
         <shape>
             <solid android:color="@color/white" />
             <corners android:radius="50dp" />
             <stroke
-                android:width="4dp"
+                android:width="3dp"
             android:color="@android:color/transparent"/>
         </shape>
     </item>

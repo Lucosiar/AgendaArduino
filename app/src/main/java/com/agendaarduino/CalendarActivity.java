@@ -1,12 +1,17 @@
 package com.agendaarduino;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.kizitonwose.calendarview.utils.Size;
 
@@ -202,15 +207,48 @@ public class CalendarActivity extends AppCompatActivity {
     }
 
     public void showDayDetailsPopup(LocalDate date) {
-        List<Action> actions = actionsByDate.get(date);
-        StringBuilder message = getStringBuilder(actions);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_day_details, null);
 
-        new AlertDialog.Builder(this)
-                .setTitle("Eventos de " + date.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", new Locale("es"))))
-                .setMessage(message.toString())
-                .setPositiveButton("Cerrar", null)
-                .show();
+        TextView txtTitle = dialogView.findViewById(R.id.txtDialogTitle);
+        LinearLayout layoutEventList = dialogView.findViewById(R.id.layoutEventList);
+        Button btnAddEvent = dialogView.findViewById(R.id.btnAddEvent);
+
+        txtTitle.setText("Eventos de " + date.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", new Locale("es"))));
+
+        List<Action> actions = actionsByDate.get(date);
+        layoutEventList.removeAllViews();
+
+        if (actions != null && !actions.isEmpty()) {
+            for (Action action : actions) {
+                TextView actionView = new TextView(this);
+                actionView.setText("• " + action.getTitle() + " - " + (action.getTime() != null ? action.getTime() : "Sin hora"));
+                actionView.setTextSize(14f);
+                actionView.setPadding(0, 8, 0, 8);
+                layoutEventList.addView(actionView);
+            }
+        } else {
+            TextView noEventsView = new TextView(this);
+            noEventsView.setText("No hay eventos ni rutinas para este día.");
+            noEventsView.setPadding(0, 8, 0, 8);
+            layoutEventList.addView(noEventsView);
+        }
+
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        btnAddEvent.setOnClickListener(v -> {
+            dialog.dismiss();
+            // Aquí puedes abrir la actividad de creación de evento
+            Intent intent = new Intent(CalendarActivity.this, EditEventActivity.class);
+            intent.putExtra("selectedDate", date.toString());
+            startActivity(intent);
+        });
     }
+
 
     @NonNull
     private static StringBuilder getStringBuilder(List<Action> actions) {
