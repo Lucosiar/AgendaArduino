@@ -33,14 +33,17 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class AddEventActivity extends AppCompatActivity {
@@ -53,6 +56,7 @@ public class AddEventActivity extends AppCompatActivity {
     private ArrayList<String> labels = new ArrayList<>();
     private ArrayAdapter<String>labelAdapter;
     private int selectedHour, selectedMinute;
+    private String[] recordatoryOptions = {"Sin recordatorio", "15 minutos", "30 minutos", "1 hora", "Misma hora", "Personalizado"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +65,16 @@ public class AddEventActivity extends AppCompatActivity {
 
         initialize();
 
+        // Obtener la fecha desde el calendario
+        String selectedDateString = getIntent().getStringExtra("selectedDate");
+        if (selectedDateString != null) {
+            LocalDate selectedDate = LocalDate.parse(selectedDateString);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            tvDateEvent.setText(selectedDate.format(formatter));
+        }
+
         // Configuración de spinner para las opciones de recordatorio
-        String[] recordatoryOptions = {"Sin recordatorio", "15 minutos", "30 minutos", "1 hora", "Misma hora", "Personalizado"};
+
         ArrayAdapter<String> recordatoryAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
@@ -226,15 +238,21 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     private void showTimePickerDialogRecordatory() {
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
-            selectedHour = hourOfDay;
-            selectedMinute = minute;
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                (view, hourOfDay, minute) -> {
+                    String customTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
 
-            String customTime = String.format("%02d:%02d", hourOfDay, minute);
-            ((ArrayAdapter<String>) spinnerRecordatoryEvent.getAdapter())
-                    .insert(customTime, spinnerRecordatoryEvent.getCount() - 1);
-            spinnerRecordatoryEvent.setSelection(spinnerRecordatoryEvent.getCount() - 2);
-        }, selectedHour, selectedMinute, true);
+                    // AÑADE ESTO AQUÍ:
+                    if (!Arrays.asList(recordatoryOptions).contains(customTime)) {
+                        ((ArrayAdapter<String>) spinnerRecordatoryEvent.getAdapter())
+                                .insert(customTime, spinnerRecordatoryEvent.getCount() - 1); // Inserta antes de "Personalizado"
+                    }
+
+                    // Establece la opción recién insertada como seleccionada
+                    int position = ((ArrayAdapter<String>) spinnerRecordatoryEvent.getAdapter()).getPosition(customTime);
+                    spinnerRecordatoryEvent.setSelection(position);
+                },
+                12, 0, true);
 
         timePickerDialog.show();
     }

@@ -243,7 +243,7 @@ public class CalendarActivity extends AppCompatActivity {
         btnAddEvent.setOnClickListener(v -> {
             dialog.dismiss();
             // Aquí puedes abrir la actividad de creación de evento
-            Intent intent = new Intent(CalendarActivity.this, EditEventActivity.class);
+            Intent intent = new Intent(CalendarActivity.this, AddEventActivity.class);
             intent.putExtra("selectedDate", date.toString());
             startActivity(intent);
         });
