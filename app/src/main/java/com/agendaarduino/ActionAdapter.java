@@ -157,12 +157,16 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         holder.cbCircle.setChecked("completado".equals(action.getStatus()));
         holder.cbCircle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             String newStatus = isChecked ? "completado" : "pendiente";
+
             // Actualizar el estado en la base de datos
             if (action instanceof Event) {
                 updateEventStatus((Event) action, newStatus);
             } else if (action instanceof Routine) {
                 updateRoutineStatus((Routine) action, newStatus);
             }
+
+            action.setStatus(newStatus);
+            notifyItemChanged(position);
         });
 
         // Configura el clic en los elementos
