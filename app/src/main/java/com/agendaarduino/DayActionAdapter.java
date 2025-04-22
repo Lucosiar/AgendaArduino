@@ -35,14 +35,16 @@ public class DayActionAdapter extends RecyclerView.Adapter<DayActionAdapter.DayA
         holder.tvTitle.setText(action.getTitle());
         holder.tvDescription.setText(action.getDescription());
         holder.tvTime.setText(action.getTime());
+        holder.tvLabel.setText(action.getLabel());
 
         // Ocultar descripción si es "Sin descripción"
         holder.tvDescription.setVisibility(
                 "Sin descripción".equals(action.getDescription()) ? View.GONE : View.VISIBLE
         );
 
-        // Puedes configurar el RecyclerView interno aquí si Action tiene checklist (opcional)
-        // Ejemplo: holder.recyclerCheckList.setAdapter(...);
+        holder.tvLabel.setVisibility(
+                "Sin etiqueta".equals(action.getLabel()) ? View.GONE : View.VISIBLE
+        );
     }
 
     @Override
@@ -51,7 +53,7 @@ public class DayActionAdapter extends RecyclerView.Adapter<DayActionAdapter.DayA
     }
 
     public static class DayActionViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvDescription, tvTime;
+        TextView tvTitle, tvDescription, tvTime, tvLabel;
         RecyclerView recyclerCheckList;
 
         public DayActionViewHolder(@NonNull View itemView) {
@@ -60,6 +62,7 @@ public class DayActionAdapter extends RecyclerView.Adapter<DayActionAdapter.DayA
             tvDescription = itemView.findViewById(R.id.tvDescription);
             tvTime = itemView.findViewById(R.id.tvTime);
             recyclerCheckList = itemView.findViewById(R.id.recyclerCheckList);
+            tvLabel = itemView.findViewById(R.id.tvLabel);
         }
     }
 }

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +23,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -234,8 +239,8 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         TextView tvDate = dialog.findViewById(R.id.tvDate);
         TextView tvTime = dialog.findViewById(R.id.tvTime);
         TextView tvHourCalculate = dialog.findViewById(R.id.tvHourCalculate);
-        Button btnEdit = dialog.findViewById(R.id.btnEdit);
-        Button btnDelete = dialog.findViewById(R.id.btnDelete);
+        ImageView btnEdit = dialog.findViewById(R.id.btnEdit);
+        ImageView btnDelete = dialog.findViewById(R.id.btnDelete);
         Button btnClose = dialog.findViewById(R.id.btnClose);
 
         tvTitle.setText(action.getTitle());
@@ -270,6 +275,8 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
 
         dialog.show();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     private void editAction(Action action) {
@@ -278,9 +285,36 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
     }
 
     private void deleteAction(Action action) {
-        // Implementa la lógica para borrar el evento o rutina
-        Toast.makeText(context, "Borrar acción: " + action.getTitle(), Toast.LENGTH_SHORT).show();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        if (action instanceof Event) {
+            Event event = (Event) action;
+            String eventId = event.getIdEvent();
+
+            if (eventId != null && !eventId.isEmpty()) {
+                db.collection("events").document(eventId)
+                        .delete()
+                        .addOnSuccessListener(aVoid -> Toast.makeText(context, "Evento eliminado", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(context, "Error al eliminar evento", Toast.LENGTH_SHORT).show());
+            } else {
+                Toast.makeText(context, "ID del evento no disponible", Toast.LENGTH_SHORT).show();
+            }
+
+        } else if (action instanceof Routine) {
+            Routine routine = (Routine) action;
+            String routineId = routine.getIdRoutine();
+
+            if (routineId != null && !routineId.isEmpty()) {
+                db.collection("routines").document(routineId)
+                        .delete()
+                        .addOnSuccessListener(aVoid -> Toast.makeText(context, "Rutina eliminada", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(context, "Error al eliminar rutina", Toast.LENGTH_SHORT).show());
+            } else {
+                Toast.makeText(context, "ID de la rutina no disponible", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
+
 
     @Override
     public int getItemCount() {
