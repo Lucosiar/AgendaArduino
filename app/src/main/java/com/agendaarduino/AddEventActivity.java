@@ -66,8 +66,6 @@ public class AddEventActivity extends AppCompatActivity {
 
         initialize();
 
-        recuperateData();
-
         // Obtener la fecha desde el calendario
         String selectedDateString = getIntent().getStringExtra("selectedDate");
         if (selectedDateString != null) {
@@ -540,40 +538,4 @@ public class AddEventActivity extends AppCompatActivity {
         finish();
     }
 
-    private void recuperateData() {
-        // Recuperamos los datos pasados por el Intent
-        Intent intent = getIntent();
-        String eventId = intent.getStringExtra("eventId");
-
-        // Consultamos Firestore para obtener los datos más actuales
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference eventRef = db.collection("events").document(eventId);
-
-        eventRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                Event event = documentSnapshot.toObject(Event.class);
-
-                // Establecemos los datos en los campos correspondientes
-                etTitleEvent.setText(event.getTitle());
-                etDescriptionEvent.setText(event.getDescription());
-                tvDateEvent.setText(event.getDate());
-                tvTimeEvent.setText(event.getTime());
-                spinnerLabelEvent.setSelection(getIndex(spinnerLabelEvent, event.getLabel()));
-                spinnerRecordatoryEvent.setSelection(getIndex(spinnerRecordatoryEvent, event.getRecordatory()));
-            }
-        }).addOnFailureListener(e -> {
-            Toast.makeText(AddEventActivity.this, "Error al cargar los datos", Toast.LENGTH_SHORT).show();
-        });
-    }
-
-
-    // Método para obtener el índice de un ítem en el Spinner
-    private int getIndex(Spinner spinner, String value) {
-        for (int i = 0; i < spinner.getCount(); i++) {
-            if (spinner.getItemAtPosition(i).toString().equals(value)) {
-                return i;
-            }
-        }
-        return 0;
-    }
 }

@@ -30,19 +30,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center"
-                android:src="@drawable/mas" />
-
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="@string/add_new_routine_textView"
+                android:text="@string/modifica_tu_rutina"
                 android:textAlignment="center"
                 android:textSize="24sp" />
 
@@ -177,10 +170,10 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/buttonSaveRoutine"
+                android:id="@+id/btnUpdateRoutine"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="@string/a_adir_rutina"
+                android:text="@string/modificar_rutina"
                 android:textColor="@color/white" />
 
         </LinearLayout>

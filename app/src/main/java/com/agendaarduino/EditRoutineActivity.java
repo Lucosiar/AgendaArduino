@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,79 +19,63 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class EditEventActivity extends AppCompatActivity {
+public class EditRoutineActivity extends AppCompatActivity {
 
-    private EditText etTitleEvent, etDescriptionEvent;
-    private TextView tvDateEvent, tvTimeEvent;
-    private Spinner spinnerLabelEvent, spinnerRecordatoryEvent;
-    private Button btnUpdateEvent;
-
-    private String eventId;
+    private TextView tvTimeRoutine;
+    private Spinner spinnerLabelRoutine, spinnerRecordatoryRoutine;
+    private Button btnUpdateRoutine;
+    private String routineId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_event);
+        setContentView(R.layout.activity_edit_routine);
 
-        etTitleEvent = findViewById(R.id.etTitleEvent);
-        etDescriptionEvent = findViewById(R.id.etDescriptionEvent);
-        tvDateEvent = findViewById(R.id.tvDateEvent);
-        tvTimeEvent = findViewById(R.id.tvTimeEvent);
-        spinnerLabelEvent = findViewById(R.id.spinnerLabelEvent);
-        spinnerRecordatoryEvent = findViewById(R.id.spinnerRecordatoryEvent);
-        btnUpdateEvent = findViewById(R.id.btnUpdateEvent);
+        tvTimeRoutine = findViewById(R.id.tvTimeRoutine);
+        spinnerLabelRoutine = findViewById(R.id.spinnerLabelRoutine);
+        spinnerRecordatoryRoutine = findViewById(R.id.spinnerRecordatoryRoutine);
+        btnUpdateRoutine = findViewById(R.id.btnUpdateRoutine);
 
-        loadEventData();
+        loadRoutineData();
 
-        btnUpdateEvent.setOnClickListener(v -> updateEventInFirebase());
+        btnUpdateRoutine.setOnClickListener(v -> updateRoutineInFirebase());
     }
 
-    private void loadEventData() {
+    private void loadRoutineData() {
         Intent intent = getIntent();
-        eventId = intent.getStringExtra("eventId");
+        routineId = intent.getStringExtra("routineId");
 
-        etTitleEvent.setText(intent.getStringExtra("eventTitle"));
-        etDescriptionEvent.setText(intent.getStringExtra("eventDescription"));
-        tvDateEvent.setText(intent.getStringExtra("eventDate"));
-        tvTimeEvent.setText(intent.getStringExtra("eventTime"));
-
-        String label = intent.getStringExtra("eventLabel");
-        String recordatory = intent.getStringExtra("eventRecordatory");
-
-        spinnerLabelEvent.setSelection(getIndex(spinnerLabelEvent, label));
-        spinnerRecordatoryEvent.setSelection(getIndex(spinnerRecordatoryEvent, recordatory));
+        tvTimeRoutine.setText(intent.getStringExtra("routineTime"));
+        spinnerLabelRoutine.setSelection(getIndex(spinnerLabelRoutine, intent.getStringExtra("routineLabel")));
+        spinnerRecordatoryRoutine.setSelection(getIndex(spinnerRecordatoryRoutine, intent.getStringExtra("routineRecordatory")));
     }
 
     private int getIndex(Spinner spinner, String value) {
         for (int i = 0; i < spinner.getCount(); i++) {
-            if (spinner.getItemAtPosition(i).toString().equals(value)) return i;
+            if (spinner.getItemAtPosition(i).toString().equals(value)) {
+                return i;
+            }
         }
         return 0;
     }
 
-    private void updateEventInFirebase() {
-        String title = etTitleEvent.getText().toString();
-        String description = etDescriptionEvent.getText().toString();
-        String date = tvDateEvent.getText().toString();
-        String time = tvTimeEvent.getText().toString();
-        String label = spinnerLabelEvent.getSelectedItem().toString();
-        String recordatory = spinnerRecordatoryEvent.getSelectedItem().toString();
+    private void updateRoutineInFirebase() {
+        String time = tvTimeRoutine.getText().toString();
+        String label = spinnerLabelRoutine.getSelectedItem().toString();
+        String recordatory = spinnerRecordatoryRoutine.getSelectedItem().toString();
         String hourCalculate = calculateHour(time, recordatory);
 
         FirebaseFirestore.getInstance()
-                .collection("events")
-                .document(eventId)
+                .collection("routines")
+                .document(routineId)
                 .update(
-                        "title", title,
-                        "description", description,
-                        "date", date,
                         "time", time,
                         "label", label,
                         "recordatory", recordatory,
                         "hourCalculate", hourCalculate
                 )
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Evento actualizado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Rutina actualizada", Toast.LENGTH_SHORT).show();
                     finish();
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Error al actualizar", Toast.LENGTH_SHORT).show());

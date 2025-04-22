@@ -282,14 +282,10 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
     private void editAction(Action action) {
         Intent intent;
 
-        // Comprobamos si el Action es un Event o Routine
         if (action instanceof Event) {
             Event event = (Event) action;
 
-            // Creamos la intención para Editar Evento
-            intent = new Intent(context, AddEventActivity.class);
-
-            // Pasamos los datos del evento
+            intent = new Intent(context, EditEventActivity.class);
             intent.putExtra("eventId", event.getIdEvent());
             intent.putExtra("eventTitle", event.getTitle());
             intent.putExtra("eventDescription", event.getDescription());
@@ -302,20 +298,16 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         } else if (action instanceof Routine) {
             Routine routine = (Routine) action;
 
-            // Creamos la intención para Editar Rutina
-            intent = new Intent(context, AddRoutinesActivity.class);
-
-            // Pasamos los datos de la rutina
+            intent = new Intent(context, EditRoutineActivity.class);
             intent.putExtra("routineId", routine.getIdRoutine());
             intent.putExtra("routineTime", routine.getTime());
             intent.putExtra("routineLabel", routine.getLabel());
             intent.putExtra("routineRecordatory", routine.getRecordatory());
             intent.putExtra("routineStatus", routine.getStatus());
         } else {
-            return; // Si no es ni Event ni Routine, no hacemos nada
+            return;
         }
 
-        // Iniciamos la actividad para editar
         context.startActivity(intent);
     }
 
