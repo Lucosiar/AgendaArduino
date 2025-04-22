@@ -138,9 +138,15 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
 
             if (fechaHoy.equals(event.getDate())) {
                 holder.tvDate.setVisibility(View.INVISIBLE);
+                holder.tvLabel.setVisibility(View.GONE);
             } else {
                 holder.tvDate.setText(event.getDate());
                 holder.tvDate.setVisibility(View.VISIBLE);
+                holder.tvLabel.setVisibility(
+                        action.getLabel() == null ||
+                                action.getLabel().isEmpty() ||
+                                "Sin etiqueta".equals(action.getLabel()) ? View.INVISIBLE : View.VISIBLE
+                );
             }
 
             fetchCheckListItems(event.getIdEvent(), holder.recyclerViewList);

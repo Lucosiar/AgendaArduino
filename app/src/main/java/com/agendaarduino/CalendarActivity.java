@@ -7,8 +7,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -27,6 +29,8 @@ import com.kizitonwose.calendarview.ui.DayBinder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -212,27 +216,41 @@ public class CalendarActivity extends AppCompatActivity {
         View dialogView = inflater.inflate(R.layout.dialog_day_details, null);
 
         TextView txtTitle = dialogView.findViewById(R.id.txtDialogTitle);
-        LinearLayout layoutEventList = dialogView.findViewById(R.id.layoutEventList);
+        RecyclerView recyclerView = dialogView.findViewById(R.id.recyclerPopupActions);
         Button btnAddEvent = dialogView.findViewById(R.id.btnAddEvent);
 
         txtTitle.setText("Eventos de " + date.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", new Locale("es"))));
 
         List<Action> actions = actionsByDate.get(date);
-        layoutEventList.removeAllViews();
 
         if (actions != null && !actions.isEmpty()) {
-            for (Action action : actions) {
-                TextView actionView = new TextView(this);
-                actionView.setText("• " + action.getTitle() + " - " + (action.getTime() != null ? action.getTime() : "Sin hora"));
-                actionView.setTextSize(14f);
-                actionView.setPadding(0, 8, 0, 8);
-                layoutEventList.addView(actionView);
-            }
+            DayActionAdapter adapter = new DayActionAdapter(this, actions);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            recyclerView.setAdapter(adapter);
+            recyclerView.setVisibility(View.VISIBLE);
         } else {
+            recyclerView.setVisibility(View.GONE);
+
+            // Agregar un mensaje si no hay eventos
+            LinearLayout emptyLayout = new LinearLayout(this);
+            emptyLayout.setOrientation(LinearLayout.VERTICAL);
+            emptyLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ));
+            emptyLayout.setPadding(0, 8, 0, 8);
+
             TextView noEventsView = new TextView(this);
             noEventsView.setText("No hay eventos ni rutinas para este día.");
+            noEventsView.setTextSize(14f);
+            noEventsView.setGravity(Gravity.CENTER);
             noEventsView.setPadding(0, 8, 0, 8);
-            layoutEventList.addView(noEventsView);
+
+            emptyLayout.addView(noEventsView);
+
+            // Añadir el layout vacío al contenedor principal del diálogo
+            LinearLayout dialogRoot = (LinearLayout) dialogView;
+            dialogRoot.addView(emptyLayout, 2); // justo antes del botón
         }
 
         builder.setView(dialogView);
@@ -242,12 +260,12 @@ public class CalendarActivity extends AppCompatActivity {
 
         btnAddEvent.setOnClickListener(v -> {
             dialog.dismiss();
-            // Aquí puedes abrir la actividad de creación de evento
             Intent intent = new Intent(CalendarActivity.this, AddEventActivity.class);
             intent.putExtra("selectedDate", date.toString());
             startActivity(intent);
         });
     }
+
 
 
     @NonNull

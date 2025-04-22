@@ -142,13 +142,6 @@ public class MainActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.action_logout) {
                 logout();
                 return true;
-            } else if(item.getItemId() == R.id.all_events){
-                showAllEvents();
-                return true;
-            }
-            else if(item.getItemId() == R.id.add_routines){
-                showAllRoutines();
-                return true;
             }else if(item.getItemId() == R.id.refresh){
                 return true;
             }
@@ -157,18 +150,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         popupMenu.show();
-    }
-
-    // Cambiar a ver todas las rutinas
-    private void showAllRoutines() {
-        Intent i = new Intent(MainActivity.this, AllEventsActivity.class);
-        startActivity(i);
-    }
-
-    // Cambiar pantalla para ver todos los eventos
-    private void showAllEvents() {
-        Intent i = new Intent(MainActivity.this, AllEventsActivity.class);
-        startActivity(i);
     }
 
     // Cerrar sesión
