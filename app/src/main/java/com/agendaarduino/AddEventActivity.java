@@ -32,6 +32,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,6 +65,8 @@ public class AddEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_event);
 
         initialize();
+
+        recuperateData();
 
         // Obtener la fecha desde el calendario
         String selectedDateString = getIntent().getStringExtra("selectedDate");
@@ -535,5 +538,42 @@ public class AddEventActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
+    }
+
+    private void recuperateData() {
+        // Recuperamos los datos pasados por el Intent
+        Intent intent = getIntent();
+        String eventId = intent.getStringExtra("eventId");
+
+        // Consultamos Firestore para obtener los datos más actuales
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference eventRef = db.collection("events").document(eventId);
+
+        eventRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Event event = documentSnapshot.toObject(Event.class);
+
+                // Establecemos los datos en los campos correspondientes
+                etTitleEvent.setText(event.getTitle());
+                etDescriptionEvent.setText(event.getDescription());
+                tvDateEvent.setText(event.getDate());
+                tvTimeEvent.setText(event.getTime());
+                spinnerLabelEvent.setSelection(getIndex(spinnerLabelEvent, event.getLabel()));
+                spinnerRecordatoryEvent.setSelection(getIndex(spinnerRecordatoryEvent, event.getRecordatory()));
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(AddEventActivity.this, "Error al cargar los datos", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+
+    // Método para obtener el índice de un ítem en el Spinner
+    private int getIndex(Spinner spinner, String value) {
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equals(value)) {
+                return i;
+            }
+        }
+        return 0;
     }
 }

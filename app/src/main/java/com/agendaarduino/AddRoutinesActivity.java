@@ -39,6 +39,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.w3c.dom.Text;
 
@@ -71,6 +72,9 @@ public class AddRoutinesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_routines);
 
         inicialice();
+
+        recuperateData();
+
 
         // Configuración de spinner para las opciones de recordatorio
         String[] recordatoryOptions = {"Sin recordatorio", "15 minutos", "30 minutos", "1 hora"};
@@ -490,7 +494,38 @@ public class AddRoutinesActivity extends AppCompatActivity {
                 Toast.makeText(this, "Error al guardar la etiqueta", Toast.LENGTH_SHORT).show());
     }
 
+    private void recuperateData() {
+        // Recuperamos los datos pasados por el Intent
+        Intent intent = getIntent();
+        String routineId = intent.getStringExtra("routineId");
 
+        // Consultamos Firestore para obtener los datos más actuales
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference routineRef = db.collection("routines").document(routineId);
+
+        routineRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Routine routine = documentSnapshot.toObject(Routine.class);
+
+                // Establecemos los datos en los campos correspondientes
+                tvTimeRoutine.setText(routine.getTime());
+                spinnerLabelRoutine.setSelection(getIndex(spinnerLabelRoutine, routine.getLabel()));
+                spinnerRecordatoryRoutine.setSelection(getIndex(spinnerRecordatoryRoutine, routine.getRecordatory()));
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(AddRoutinesActivity.this, "Error al cargar los datos", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    // Método para obtener el índice de un ítem en el Spinner
+    private int getIndex(Spinner spinner, String value) {
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equals(value)) {
+                return i;
+            }
+        }
+        return 0;
+    }
 
     private void inicialice(){
         spinnerLabelRoutine = findViewById(R.id.spinnerLabelRoutine);
