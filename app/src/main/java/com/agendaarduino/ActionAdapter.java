@@ -246,18 +246,31 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
         tvTitle.setText(action.getTitle());
         tvStatus.setText(action.getStatus());
         tvDescription.setText(action.getDescription());
-        tvHourCalculate.setText(action.getHourCalculate());
 
+        // Ocultar descripción
+        if ("Sin descripción".equalsIgnoreCase(action.getDescription())) {
+            tvDescription.setVisibility(View.GONE);
+        } else {
+            tvDescription.setVisibility(View.VISIBLE);
+        }
+
+        // Mostrar estado
+        if ("pendiente".equalsIgnoreCase(action.getStatus())) {
+            tvStatus.setVisibility(View.VISIBLE);
+            tvStatus.setText(action.getStatus());
+        }
 
         if (action instanceof Event) {
             Event event = (Event) action;
-            tvDate.setText(event.getDate());
-            tvTime.setText(event.getTime());
+            tvDate.setText("Día: " + event.getDate());
+            tvTime.setText("Hora: " + event.getTime());
         } else if (action instanceof Routine) {
             Routine routine = (Routine) action;
-            tvTime.setText(routine.getTime());
+            tvTime.setText("Hora: " + routine.getTime());
             tvDate.setVisibility(View.GONE);
         }
+
+        tvHourCalculate.setText("Hora de recordatorio: " + action.getHourCalculate());
 
         btnEdit.setOnClickListener(v -> {
             editAction(action);
@@ -342,7 +355,6 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             }
         }
     }
-
 
     @Override
     public int getItemCount() {

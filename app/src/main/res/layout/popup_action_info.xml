@@ -38,7 +38,9 @@
         android:layout_marginTop="16dp"
         android:orientation="horizontal"
         android:weightSum="2"
-        android:paddingTop="10dp">
+        android:paddingTop="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp">
 
         <TextView
             android:id="@+id/tvTitle"
@@ -47,14 +49,15 @@
             android:layout_weight="1"
             android:textSize="18sp"
             android:textStyle="bold" />
-
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="end"
-            android:paddingEnd="10dp" />
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingEnd="10dp"
+            android:gravity="end"/>
 
     </LinearLayout>
 
@@ -65,34 +68,26 @@
         android:layout_marginTop="8dp"
         />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
+        android:layout_marginTop="8dp"
+        android:paddingStart="10dp" />
 
-        <TextView
-            android:id="@+id/tvDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingStart="10dp" />
 
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:paddingStart="10dp"
-            android:gravity="end"/>
-
-        <TextView
-            android:id="@+id/tvHourCalculate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:paddingStart="10dp" />
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tvHourCalculate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingStart="10dp" />
 
     <TextView
         android:id="@+id/checklist"
