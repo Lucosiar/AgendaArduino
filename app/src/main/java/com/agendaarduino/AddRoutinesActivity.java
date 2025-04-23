@@ -181,11 +181,13 @@ public class AddRoutinesActivity extends AppCompatActivity {
             if (child instanceof TextView) {
                 String item = ((TextView) child).getText().toString();
                 checklistItems.add(item);
+                Log.d("Checklist", "Elemento del checklist: " + item);
             }
         }
 
         return checklistItems;
     }
+
 
     private void openSelectDaysRoutine() {
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -330,6 +332,10 @@ public class AddRoutinesActivity extends AppCompatActivity {
         List<String> checklistItems = getChecklistItems();
         CollectionReference checklistRef = Utility.getCollectionReferenceForChecklist();
 
+        if(checklistItems.isEmpty() || checklistItems==null){
+            return;
+        }
+
         for (String item : checklistItems) {
             String checklistId = checklistRef.document().getId();
 
@@ -338,6 +344,8 @@ public class AddRoutinesActivity extends AppCompatActivity {
                     item,
                     "pendiente"
             );
+
+            checklistItem.setIdChecklist(checklistId);
 
             checklistRef.document(checklistId).set(checklistItem).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {

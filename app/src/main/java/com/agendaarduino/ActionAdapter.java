@@ -270,7 +270,7 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             tvDate.setVisibility(View.GONE);
         }
 
-        tvHourCalculate.setText("Hora de recordatorio: " + action.getHourCalculate());
+        tvHourCalculate.setText("Recordatorio: " + action.getHourCalculate());
 
         btnEdit.setOnClickListener(v -> {
             editAction(action);
