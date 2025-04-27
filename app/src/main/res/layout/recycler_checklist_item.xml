@@ -34,7 +34,7 @@
                 android:layout_marginTop="8dp"
                 android:gravity="center_vertical"
                 android:text="Title"
-                android:textColor="@color/text_color"
+                android:textColor="@color/white"
                 android:textSize="20sp" />
 
         </LinearLayout>

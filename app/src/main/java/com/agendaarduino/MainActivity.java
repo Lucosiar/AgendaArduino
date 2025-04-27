@@ -142,8 +142,6 @@ public class MainActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.action_logout) {
                 logout();
                 return true;
-            }else if(item.getItemId() == R.id.refresh){
-                return true;
             }
             else {
                 return false;
@@ -171,7 +169,9 @@ public class MainActivity extends AppCompatActivity {
     // Preparamos el recycler para mostrar acciones
     private void setUpRecyclerView() {
         List<Action> actionList = new ArrayList<>();
-        actionAdapter = new ActionAdapter(this, actionList, action -> editAction());
+        actionAdapter = new ActionAdapter(this, actionList, action -> {
+            // De momento no se hace nada
+        });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(actionAdapter);
@@ -258,12 +258,6 @@ public class MainActivity extends AppCompatActivity {
     private void newRoutine() {
         Intent i = new Intent(MainActivity.this, AddRoutinesActivity.class);
         startActivity(i);
-    }
-
-    // Editar una acción // FALTA POR HACER
-    private void editAction(){
-        // Editar accion
-        // Si es evento va a cambiar evento y si es rutina, cambia la rutina.
     }
 
     private void createNotificationChannel() {

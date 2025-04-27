@@ -30,7 +30,7 @@
                     android:layout_marginVertical="4dp"
                     android:gravity="center_vertical"
                     android:text="Title"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/white"
                     android:textSize="23sp" />
 
                 <TextView
@@ -41,7 +41,7 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="Label"
-                    android:textColor="@color/text_color"
+                    android:textColor="@color/white"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -53,7 +53,7 @@
                 android:layout_marginVertical="4dp"
                 android:layout_marginStart="10dp"
                 android:text="Descripcion"
-                android:textColor="@color/text_color"
+                android:textColor="@color/white"
                 android:textSize="18sp" />
 
 
@@ -65,7 +65,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:text="Time"
-                android:textColor="@color/text_color"
+                android:textColor="@color/white"
                 android:textSize="18sp" />
 
             <androidx.recyclerview.widget.RecyclerView

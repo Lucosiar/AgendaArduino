@@ -25,7 +25,7 @@
             android:text="Lun"
             android:gravity="center"
             android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:textColor="@color/text_color" />
 
         <TextView
             android:layout_width="0dp"
@@ -34,7 +34,7 @@
             android:text="Mar"
             android:gravity="center"
             android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:textColor="@color/text_color" />
 
         <TextView
             android:layout_width="0dp"
@@ -43,7 +43,7 @@
             android:text="Mié"
             android:gravity="center"
             android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:textColor="@color/text_color" />
 
         <TextView
             android:layout_width="0dp"
@@ -52,7 +52,7 @@
             android:text="Jue"
             android:gravity="center"
             android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:textColor="@color/text_color" />
 
         <TextView
             android:layout_width="0dp"
@@ -61,7 +61,7 @@
             android:text="Vie"
             android:gravity="center"
             android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:textColor="@color/text_color" />
 
         <TextView
             android:layout_width="0dp"
@@ -70,7 +70,7 @@
             android:text="Sáb"
             android:gravity="center"
             android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:textColor="@color/text_color" />
 
         <TextView
             android:layout_width="0dp"
@@ -79,7 +79,7 @@
             android:text="Dom"
             android:gravity="center"
             android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:textColor="@color/text_color" />
     </LinearLayout>
 
     <TextView

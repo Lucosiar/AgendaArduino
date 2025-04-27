@@ -105,7 +105,7 @@ public class CalendarActivity extends AppCompatActivity {
                     if (day.getDate().equals(LocalDate.now())) {
                         textView.setTextColor(ContextCompat.getColor(CalendarActivity.this, R.color.colorSecundary));
                     } else {
-                        textView.setTextColor(Color.WHITE);
+                        textView.setTextColor(ContextCompat.getColor(CalendarActivity.this, R.color.text_color));
                     }
 
                     // Mostrar eventos
