@@ -114,19 +114,19 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
     public void onBindViewHolder(@NonNull ActionViewHolder holder, int position) {
         Action action = actionsList.get(position);
 
-        // Configurar las vistas del adaptador
+        // Configurar los textos principales
         holder.tvTitle.setText(action.getTitle());
         holder.tvDescription.setText(action.getDescription());
         holder.tvTime.setText(action.getTime());
         holder.tvLabel.setText(action.getLabel());
 
-        holder.tvLabel.setVisibility(action.getLabel() == null
-                || action.getLabel().isEmpty()
-                || "Sin etiqueta".equals(action.getLabel()) ? View.INVISIBLE : View.VISIBLE);
+        // Mostrar u ocultar la etiqueta
+        holder.tvLabel.setVisibility(shouldHideLabel(action.getLabel()) ? View.INVISIBLE : View.VISIBLE);
+
+        // Ocultar descripción si es "Sin descripción"
         holder.tvDescription.setVisibility("Sin descripción".equals(action.getDescription()) ? View.GONE : View.VISIBLE);
 
-        holder.cbCircle.setChecked("completado".equals(action.getStatus()));
-
+        // Preparar la fecha actual
         LocalDate fechaActual = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String fechaHoy = fechaActual.format(formatter);
@@ -135,25 +135,24 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             Event event = (Event) action;
             LocalDate fechaEvento = LocalDate.parse(event.getDate(), formatter);
 
+            // Cambiar el fondo si el evento es pasado
             if (fechaEvento.isBefore(fechaActual)) {
                 holder.actionLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.background_recycler_delayed));
             } else {
                 holder.actionLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.backgroud_recycler));
             }
 
+            // Mostrar u ocultar fecha y etiqueta según corresponda
             if (fechaHoy.equals(event.getDate())) {
                 holder.tvDate.setVisibility(View.INVISIBLE);
                 holder.tvLabel.setVisibility(View.GONE);
             } else {
                 holder.tvDate.setText(event.getDate());
                 holder.tvDate.setVisibility(View.VISIBLE);
-                holder.tvLabel.setVisibility(
-                        action.getLabel() == null ||
-                                action.getLabel().isEmpty() ||
-                                "Sin etiqueta".equals(action.getLabel()) ? View.INVISIBLE : View.VISIBLE
-                );
+                holder.tvLabel.setVisibility(shouldHideLabel(action.getLabel()) ? View.INVISIBLE : View.VISIBLE);
             }
 
+            // Cargar checklist de este evento
             fetchCheckListItems(event.getIdEvent(), holder.recyclerViewList);
 
         } else if (action instanceof Routine) {
@@ -164,12 +163,12 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             String todayDayOfWeek = fechaActual.format(dayFormatter).toLowerCase();
         }
 
+        // Manejar el estado del checkbox
         holder.cbCircle.setOnCheckedChangeListener(null);
         holder.cbCircle.setChecked("completado".equals(action.getStatus()));
         holder.cbCircle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             String newStatus = isChecked ? "completado" : "pendiente";
 
-            // Actualizar el estado en la base de datos
             if (action instanceof Event) {
                 updateEventStatus((Event) action, newStatus);
             } else if (action instanceof Routine) {
@@ -177,13 +176,21 @@ public class ActionAdapter extends RecyclerView.Adapter<ActionAdapter.ActionView
             }
 
             action.setStatus(newStatus);
-            notifyItemChanged(position);
+
+            holder.itemView.post(() -> notifyItemChanged(position));
         });
 
-        // Configura el clic en los elementos
+        // Mostrar información al hacer clic en el ítem
         holder.itemView.setOnClickListener(v -> showEventInfoPopup(action));
-
     }
+
+    // Método auxiliar para saber si ocultar la etiqueta
+    private boolean shouldHideLabel(String label) {
+        return label == null || label.isEmpty() || "Sin etiqueta".equals(label);
+    }
+
+
+
 
     // Get las notificaciones
     private void fetchCheckListItems(String actionId, RecyclerView recyclerView) {
